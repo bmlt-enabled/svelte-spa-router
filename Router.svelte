@@ -528,42 +528,40 @@ const unsubscribeLoc = loc.subscribe(async (newLoc) => {
         dispatchNextTick('routeLoading', {...detail})
 
         const obj = routesList[i].component
-        if (componentObj != obj) {
-            if (obj.loading) {
-                componentStore.set(obj.loading)
-                componentObj = obj
-                componentParamsStore.set(obj.loadingParams)
-                propsStore.set({})
-                const comp = obj.loading
-                routeLoaded({
-                    detail: {
-                        ...detail,
-                        component: comp,
-                        name: comp.name,
-                        params: obj.loadingParams
-                    }
-                })
-                dispatchNextTick('routeLoaded', {
+        // Always unmount first to ensure onMount fires on every navigation
+        componentStore.set(null)
+        componentObj = null
+
+        if (obj.loading) {
+            componentStore.set(obj.loading)
+            componentObj = obj
+            componentParamsStore.set(obj.loadingParams)
+            propsStore.set({})
+            const comp = obj.loading
+            routeLoaded({
+                detail: {
                     ...detail,
                     component: comp,
                     name: comp.name,
                     params: obj.loadingParams
-                })
-            }
-            else {
-                componentStore.set(null)
-                componentObj = null
-            }
-
-            const loaded = await obj()
-
-            if (newLoc != lastLoc) {
-                return
-            }
-
-            componentStore.set((loaded && loaded.default) || loaded)
-            componentObj = obj
+                }
+            })
+            dispatchNextTick('routeLoaded', {
+                ...detail,
+                component: comp,
+                name: comp.name,
+                params: obj.loadingParams
+            })
         }
+
+        const loaded = await obj()
+
+        if (newLoc != lastLoc) {
+            return
+        }
+
+        componentStore.set((loaded && loaded.default) || loaded)
+        componentObj = obj
 
         // Set componentParams only if we have a match, to avoid a warning similar to `<Component> was created with unknown prop 'params'`
         // Of course, this assumes that developers always add a "params" prop when they are expecting parameters
