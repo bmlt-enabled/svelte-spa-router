@@ -55,8 +55,6 @@ npm install @bmlt-enabled/svelte-spa-router
 - Firefox
 - Safari
 
-Support for Internet Explorer is not a goal for this project.
-
 ### Define your routes
 
 Each route is a normal Svelte component, with the markup, scripts, bindings, etc. Any Svelte component can be a route.

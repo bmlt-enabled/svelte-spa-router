@@ -1,8 +1,8 @@
 # Advanced usage
 
-svelte-spa-router is simple by design. A minimal router is easy to learn and implement, adds minimum overhead, and leaves more control in the hands of the developers.
+@bmlt-enabled/svelte-spa-router is simple by design. A minimal router is easy to learn and implement, adds minimum overhead, and leaves more control in the hands of the developers.
 
-Thanks to the many features of Svelte or other components in the ecosystem, svelte-spa-router can be used to get many more "advanced" features. This document explains how to achieve certain results with svelte-spa-router beyond what's offered by the component itself.
+Thanks to the many features of Svelte or other components in the ecosystem, @bmlt-enabled/svelte-spa-router can be used to get many more "advanced" features. This document explains how to achieve certain results with @bmlt-enabled/svelte-spa-router beyond what's offered by the component itself.
 
 - [Route wrapping](#route-wrapping), including:
     - [Dynamically-imported routes and placeholders](#async-routes-and-loading-placeholders)
@@ -30,10 +30,10 @@ The `wrap` method allows a few more interesting features, however:
 
 ### The `wrap` method
 
-The `wrap(options)` method is imported from `svelte-spa-router/wrap`:
+The `wrap(options)` method is imported from `@bmlt-enabled/svelte-spa-router/wrap`:
 
 ```js
-import { wrap } from 'svelte-spa-router/wrap'
+import { wrap } from '@bmlt-enabled/svelte-spa-router/wrap'
 ```
 
 It accepts a single `options` argument that is an object with the following properties:
@@ -74,7 +74,7 @@ routes.set(
 
 ### Async routes and loading placeholders
 
-As mentioned in the main readme, starting with version 3 the `wrap` method is used with dynamically-imported components. This allows (when the bundler supports that, such as with Vite, Rollup or Webpack) code-splitting too, so code for less-common routes can be downloaded on-demand from the server rather than shipped in the app's core bundle.
+The `wrap` method supports dynamically-imported components, enabling code-splitting so that code for less-common routes is downloaded on-demand rather than shipped in the app's core bundle.
 
 This is done by setting the `options.asyncComponent` property to a function that returns a dynamically-imported module. For example:
 
@@ -94,7 +94,7 @@ For example, with a `Loading.svelte` component:
 
 ```svelte
 <script>
-    export let params = null
+    let { params = null } = $props()
 </script>
 
 <h2>Loading</h2>
@@ -107,7 +107,7 @@ You can define the route as:
 
 ```js
 // Import the wrap method
-import { wrap } from 'svelte-spa-router/wrap'
+import { wrap } from '@bmlt-enabled/svelte-spa-router/wrap'
 
 // Statically-included components
 import Loading from './Loading.svelte'
@@ -163,8 +163,8 @@ Pre-conditions are defined in the `options.conditions` argument for the `wrap` f
 Each pre-condition function receives a dictionary `detail` with the same structure as `onRouteLoading` (more information [below](#onrouteloading-and-onrouteloaded)):
 
 - `detail.route`: the route that was matched, exactly as defined in the route definition object
-- `detail.location`: the current path (just like the `$location` readable store)
-- `detail.querystring`: the current "querystring" parameters from the page's hash (just like the `$querystring` readable store)
+- `detail.location`: the current path (same as `router.location`)
+- `detail.querystring`: the current "querystring" parameters from the page's hash (same as `router.querystring`)
 - `detail.userData`: custom user data passed with the `wrap` function (see above)
 
 The pre-condition functions must return a boolean indicating wether the condition succeeded (true) or failed (false).
@@ -175,8 +175,8 @@ Example:
 
 ```svelte
 <script>
-    import Router from 'svelte-spa-router'
-    import { wrap } from 'svelte-spa-router/wrap'
+    import Router from '@bmlt-enabled/svelte-spa-router'
+    import { wrap } from '@bmlt-enabled/svelte-spa-router/wrap'
 
     import Lucky from './Lucky.svelte'
     import Hello from './Hello.svelte'
@@ -227,7 +227,7 @@ Example:
 
 Pre-conditions can be applied to dynamically-loaded routes too.
 
-Additionally, starting with version 3 of svelte-spa-router, pre-conditions can be asynchronous function too. This is helpful, for example, to request authentication data, user profiles… For example:
+Pre-conditions can also be asynchronous functions. This is helpful, for example, to request authentication data or user profiles. For example:
 
 ```js
 const routes = {
@@ -286,8 +286,7 @@ For example, assume this component `Foo.svelte`:
 
 ```svelte
 <script>
-    // Prop
-    export let num
+    let { num } = $props()
 </script>
 
 <p>The secret number is {num}</p>
@@ -298,8 +297,8 @@ If `Foo` is a route in your application, you can pass a series of props to it t
 ```svelte
 <script>
     // Import the router and routes
-    import Router from 'svelte-spa-router'
-    import { wrap } from 'svelte-spa-router/wrap'
+    import Router from '@bmlt-enabled/svelte-spa-router'
+    import { wrap } from '@bmlt-enabled/svelte-spa-router/wrap'
     import Foo from './Foo.svelte'
 
     // Route definition object
@@ -314,7 +313,7 @@ If `Foo` is a route in your application, you can pass a series of props to it t
     }
 </script>
 
-<Router {routes} {props} />
+<Router {routes} />
 ```
 
 ## `onRouteEvent`
@@ -329,7 +328,7 @@ Example for `App.svelte`:
 
 ```svelte
 <script>
-    import Router from 'svelte-spa-router'
+    import Router from '@bmlt-enabled/svelte-spa-router'
     import Foo from './Foo.svelte'
     const routes = { '*': Foo }
     function onRouteEvent(detail) {
@@ -365,10 +364,10 @@ The callback for **`onRouteLoading`** receives the following `detail` object dir
 detail = {
     // The route that was matched, as in the route definition object
     route: '/book/:id',
-    // The current path, equivalent to the value of the $location readable store
-    // Note that this is different from the route property as the former is the route definition, while this is the actual path the user requested
+    // The current path (same as router.location)
+    // Note that this is different from the route property: route is the definition, location is the actual path the user requested
     location: '/book/343',
-    // The "querystring" from the page's hash, equivalent to the value of the $querystring readable store
+    // The "querystring" from the page's hash (same as router.querystring)
     querystring: 'foo=bar',
     // Params matched from the route (such as :id from the route)
     params: { id: '343' },
@@ -432,16 +431,17 @@ For help with the `wrap` function, check the [route wrapping](#route-wrapping) s
 
 ## Querystring parsing
 
-As the main documentation for svelte-spa-router mentions, you can extract parameters from the "querystring" in the hash of the page. This allows you to build apps that navigate to pages such as `#/search?query=hello+world&sort=title`.
+You can extract parameters from the "querystring" in the hash of the page. This allows you to build apps that navigate to pages such as `#/search?query=hello+world&sort=title`.
 
-The router has built-in support for returning the value of the "querystring", but it only returns the full string and doesn't perform any parsing. Components can access the "querystring" part of the hash from the `$querystring` store in the svelte-spa-router component. For example:
+The router returns the full querystring string without parsing it. Access it via `router.querystring`:
 
 ```svelte
 <script>
-    import { location, querystring } from 'svelte-spa-router'
+    import { router } from '@bmlt-enabled/svelte-spa-router'
 </script>
 
-<p>The current page is: {$location}</p><p>The querystring is: {$querystring}</p>
+<p>The current page is: {router.location}</p>
+<p>The querystring is: {router.querystring}</p>
 ```
 
 When visiting the page `#/search?query=hello+world&sort=title`, this would generate:
@@ -451,18 +451,16 @@ The current page is: /search
 The querystring is: query=hello+world&sort=title
 ```
 
-Most times, however, you might want to parse the "querystring" into a dictionary, to be able to use those values inside your application easily. There are multiple ways of doing that. The simplest one is using [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) which is available in all modern browsers. If you need support for older browsers, a safe solution is to rely on the popular [qs](https://www.npmjs.com/package/qs) library.
+To parse the querystring into a dictionary, use [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) (available in all modern browsers) or a library like [qs](https://www.npmjs.com/package/qs).
 
-Here's an example on using `qs` by changing the component above to:
+Here's an example using `qs`:
 
 ```svelte
 <script>
     import { parse } from 'qs'
-    import { querystring } from 'svelte-spa-router'
+    import { router } from '@bmlt-enabled/svelte-spa-router'
 
-    // Use a reactive statement to ensure parsed
-    // is updated every time $querystring changes
-    $: parsed = parse($querystring)
+    const parsed = $derived(parse(router.querystring))
 </script>
 
 <code>{JSON.stringify(parsed)}</code>
@@ -498,34 +496,30 @@ For more details: [official documentation](https://svelte.dev/docs#Transitions) 
 
 ## Nested routers
 
-The `<Router>` component of svelte-spa-router can be nested without issues.
+The `<Router>` component of @bmlt-enabled/svelte-spa-router can be nested without issues.
 
 For example, consider an app with these four components:
 
 ```svelte
 <!-- App.svelte -->
-<Router {routes}/>
 <script>
-import Router from 'svelte-spa-router'
+import Router from '@bmlt-enabled/svelte-spa-router'
 import Hello from './Hello.svelte'
 // Routes for the "outer router"
 const routes = {
-    // We need to define both '/hello' and '/hello/*' in two separate lines to ensure that both '/hello' (with nothing else) and sub-paths are matched
+    // Define both '/hello' and '/hello/*' to match the path with and without sub-paths
     '/hello': Hello,
     '/hello/*': Hello,
 }
-
-/*
-Note: If defining routes using a Map object, you could use a custom regular expression instead of having to define the route twice:
-routes.set(/^\/hello(\/(.*))?/, Hello)
-*/
+// Note: with a Map you could use a regex instead:
+// routes.set(/^\/hello(\/(.*))?/, Hello)
 </script>
 
+<Router {routes} />
+
 <!-- Hello.svelte -->
-<h2>Hello!</h2>
-<Router {routes} {prefix} />
 <script>
-import Router from 'svelte-spa-router'
+import Router from '@bmlt-enabled/svelte-spa-router'
 import FullName from './FullName.svelte'
 import ShortName from './ShortName.svelte'
 // Routes for the "inner router"
@@ -533,24 +527,29 @@ import ShortName from './ShortName.svelte'
 const prefix = '/hello'
 const routes = {
     '/:first/:last': FullName,
-    '/:first': ShortName
+    '/:first': ShortName,
 }
 </script>
 
+<h2>Hello!</h2>
+<Router {routes} {prefix} />
+
 <!-- FullName.svelte -->
+<script>
+let { params = {} } = $props()
+</script>
+
 <p>You gave us both a first name and last name!</p>
 <p>First: {params.first}</p>
 <p>Last: {params.last}</p>
-<script>
-export let params = {}
-</script>
 
 <!-- ShortName.svelte -->
+<script>
+let { params = {} } = $props()
+</script>
+
 <p>You shy person, giving us a first name only!</p>
 <p>First: {params.first}</p>
-<script>
-export let params = {}
-</script>
 ```
 
 This works as you would expect:
@@ -563,7 +562,7 @@ Both routes first load the `Hello` route, as they both match `/hello/*` in the o
 
 Features like highlighting active links will still work, regardless of where those links are placed in the page (in which component).
 
-Note that if your parent router uses a route that contains parameters, such as `/user/:id`, then you must define a regular expression for `prefix`. For example: `prefix={/^\/user\/[0-9]+/}`. This is available in svelte-spa-router 3 or higher.
+Note that if your parent router uses a route that contains parameters, such as `/user/:id`, then you must define a regular expression for `prefix`. For example: `prefix={/^\/user\/[0-9]+/}`.
 
 ## Route groups
 
@@ -590,7 +589,7 @@ When you add `GroupRoute` as a component in your router, you will render both `R
 
 ## Restore scroll position
 
-Starting with svelte-spa-router 3.0, there is a new option in the `Router` component to restore the scroll position when the user navigates to the previous page.
+The `Router` component has an option to restore the scroll position when the user navigates to the previous page.
 
 To enable that, set the `restoreScrollState` property to `true` in the router (it's disabled by default):
 
