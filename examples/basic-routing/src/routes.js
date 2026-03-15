@@ -1,22 +1,22 @@
-// Components
 import Home from './routes/Home.svelte'
 import Name from './routes/Name.svelte'
-import Wild from './routes/Wild.svelte'
 import NotFound from './routes/NotFound.svelte'
+import Loading from './routes/Loading.svelte'
+import { wrap } from '../../../wrap.js'
 
-// Export the route definition object
-export default {
-    // Exact path
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+export const routes = {
     '/': Home,
-
-    // Using named parameters, with last being optional
-    '/hello/:first/:last?': Name,
-
-    // Wildcard parameter
-    // Included twice to match both `/wild` (and nothing after) and `/wild/*` (with anything after)
-    '/wild': Wild,
-    '/wild/*': Wild,
-
-    // Catch-all, must be last
+    '/hello/:name': Name,
+    '/lazy': wrap({
+        asyncComponent: () => import('./routes/Lazy.svelte'),
+    }),
+    '/lazy-with-loading': wrap({
+        asyncComponent: () =>
+            delay(1000).then(() => import('./routes/Lazy.svelte')),
+        loadingComponent: Loading,
+        loadingParams: { message: 'Loading page...' },
+    }),
     '*': NotFound,
 }

@@ -1,15 +1,7 @@
-example
-examples
-.devcontainer
 .eslint*
 .vscode
 *.log
-nightwatch.conf.js
-test
-reports
 **/.DS_Store
-azure-pipelines.yml
-azure-pipelines.yaml
 .gitattributes
 svelte-spa-router*.tgz
 img

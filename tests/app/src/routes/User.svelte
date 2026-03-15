@@ -2,4 +2,4 @@
     const { params } = $props()
 </script>
 
-<h1>Hello, {params.name}!</h1>
+<h1 id="page-user">User: {params.name}</h1>

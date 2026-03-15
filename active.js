@@ -1,5 +1,5 @@
-import {parse} from 'regexparam'
-import {loc} from './Router.svelte'
+import { parse } from 'regexparam'
+import { router } from './Router.svelte'
 
 // List of nodes to update
 const nodes = []
@@ -15,7 +15,7 @@ function checkActive(el) {
 }
 
 function toggleClasses(el, className, shouldAdd) {
-    (className || '').split(' ').forEach((cls) => {
+    ;(className || '').split(' ').forEach((cls) => {
         if (!cls) {
             return
         }
@@ -30,13 +30,14 @@ function toggleClasses(el, className, shouldAdd) {
 }
 
 // Listen to changes in the location
-loc.subscribe((value) => {
-    // Update the location
-    location = value.location + (value.querystring ? '?' + value.querystring : '')
-
-    // Update all nodes
+function updateLocation() {
+    const value = router.loc
+    location =
+        value.location + (value.querystring ? '?' + value.querystring : '')
     nodes.map(checkActive)
-})
+}
+window.addEventListener('hashchange', updateLocation, false)
+updateLocation()
 
 /**
  * @typedef {Object} ActiveOptions
@@ -46,20 +47,23 @@ loc.subscribe((value) => {
 
 /**
  * Svelte Action for automatically adding the "active" class to elements (links, or any other DOM element) when the current location matches a certain path.
- * 
+ *
  * @param {HTMLElement} node - The target node (automatically set by Svelte)
  * @param {ActiveOptions|string|RegExp} [opts] - Can be an object of type ActiveOptions, or a string (or regular expressions) representing ActiveOptions.path.
  * @returns {{destroy: function(): void}} Destroy function
  */
 export default function active(node, opts) {
     // Check options
-    if (opts && (typeof opts == 'string' || (typeof opts == 'object' && opts instanceof RegExp))) {
+    if (
+        opts &&
+        (typeof opts == 'string' ||
+            (typeof opts == 'object' && opts instanceof RegExp))
+    ) {
         // Interpret strings and regular expressions as opts.path
         opts = {
-            path: opts
+            path: opts,
         }
-    }
-    else {
+    } else {
         // Ensure opts is a dictionary
         opts = opts || {}
     }
@@ -67,7 +71,7 @@ export default function active(node, opts) {
     // Path defaults to link target
     if (!opts.path && node.hasAttribute('href')) {
         opts.path = node.getAttribute('href')
-        if (opts.path && opts.path.length > 1 && opts.path.charAt(0) == '#') {
+        if (opts.path && opts.path.length > 1 && opts.path.charAt(0) === '#') {
             opts.path = opts.path.substring(1)
         }
     }
@@ -78,23 +82,25 @@ export default function active(node, opts) {
     }
 
     // If path is a string, it must start with '/' or '*'
-    if (!opts.path || 
-        typeof opts.path == 'string' && (opts.path.length < 1 || (opts.path.charAt(0) != '/' && opts.path.charAt(0) != '*'))
+    if (
+        !opts.path ||
+        (typeof opts.path == 'string' &&
+            (opts.path.length < 1 ||
+                (opts.path.charAt(0) !== '/' && opts.path.charAt(0) !== '*')))
     ) {
         throw Error('Invalid value for "path" argument')
     }
 
     // If path is not a regular expression already, make it
-    const {pattern} = typeof opts.path == 'string' ?
-        parse(opts.path) :
-        {pattern: opts.path}
+    const { pattern } =
+        typeof opts.path == 'string' ? parse(opts.path) : { pattern: opts.path }
 
     // Add the node to the list
     const el = {
         node,
         className: opts.className,
         inactiveClassName: opts.inactiveClassName,
-        pattern
+        pattern,
     }
     nodes.push(el)
 
@@ -105,6 +111,6 @@ export default function active(node, opts) {
         // When the element is destroyed, remove it from the list
         destroy() {
             nodes.splice(nodes.indexOf(el), 1)
-        }
+        },
     }
 }

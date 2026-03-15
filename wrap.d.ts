@@ -1,5 +1,9 @@
-import type {Component} from 'svelte'
-import {AsyncSvelteComponent, RoutePrecondition, WrappedComponent} from './Router'
+import type { Component } from 'svelte'
+import {
+    AsyncSvelteComponent,
+    RoutePrecondition,
+    WrappedComponent,
+} from './Router'
 
 /** Options object for the call to `wrap` */
 export interface WrapOptions {

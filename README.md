@@ -1,19 +1,4 @@
-<table>
-  <tr>
-    <td>
-      <a href="https://www.amazon.com/dp/B08D6T6BKS/"><img src="https://static.packt-cdn.com/products/9781839213625/cover/smaller" width="120" /></a>
-    </td>
-    <td>
-      <h3>Svelte 3 Up and Running</h3>
-      <p>Want to learn Svelte 3 and how to build a Single-Page App (SPA) with it (and with this router)? Check out my book <a href="https://www.amazon.com/dp/B08D6T6BKS/">Svelte 3 Up and Running</a> on Amazon.</p>
-    </td>
-</table>
-
 # svelte-spa-router
-
-[![Build Status](https://github.com/ItalyPaleAle/svelte-spa-router/workflows/Continuous%20Integration%20tests/badge.svg)](https://github.com/ItalyPaleAle/svelte-spa-router/actions) 
-[![npm](https://img.shields.io/npm/v/svelte-spa-router.svg)](https://www.npmjs.com/package/svelte-spa-router)
-[![GitHub](https://img.shields.io/github/license/ItalyPaleAle/svelte-spa-router.svg)](https://github.com/ItalyPaleAle/svelte-spa-router/blob/master/LICENSE.md)
 
 This module is a router for [Svelte 5](https://github.com/sveltejs/svelte) applications (prior versions support Svelte 3 and 4), specifically optimized for Single Page Applications (SPA).
 
@@ -23,14 +8,7 @@ Main features:
 - Insanely simple to use, and has a minimal footprint
 - Uses the tiny [regexparam](https://github.com/lukeed/regexparam) for parsing routes, with support for parameters (e.g. `/book/:id?`) and more
 
-This module is released under MIT license.
-
-## Video
-
-["So you want to pick a router?"]((https://www.youtube.com/watch?v=EL1qM0cv0eA)) talk by @ItalyPaleAle at Svelte Summit 2020. Includes an explanation of the two kinds of routers and a demo of svelte-spa-router.  
-_(Click on the cover image to play the video on YouTube)_
-
-[![Click to play video: 'So you want to pick a router?'](https://img.youtube.com/vi/EL1qM0cv0eA/0.jpg)](https://www.youtube.com/watch?v=EL1qM0cv0eA)
+This module is released under MIT license, forked from [ItalyPaleAle/svelte-spa-router](https://github.com/ItalyPaleAle/svelte-spa-router).
 
 ## Hash-based routing
 
@@ -48,7 +26,7 @@ Check out the code in the [examples](/examples) folder for some usage examples.
 
 To run the samples, clone the repository, install the dependencies, then build each sample using Rollup:
 
-````sh
+```sh
 git clone https://github.com/ItalyPaleAle/svelte-spa-router
 cd svelte-spa-router
 npm install
@@ -61,7 +39,7 @@ cd examples/basic-routing
 # Build and run (in the folder of a sample)
 npx rollup -c
 npx serve -n -l 5050 dist
-````
+```
 
 The sample will be running at http://localhost:5050
 
@@ -88,9 +66,9 @@ You can include the router in any project using Svelte 5 (older major versions s
 
 To add svelte-spa-router to your project:
 
-````sh
+```sh
 npm install svelte-spa-router
-````
+```
 
 ### Supported browsers
 
@@ -111,7 +89,7 @@ The route definition is just a JavaScript dictionary (object) where the key is a
 
 For example:
 
-````js
+```js
 import Home from './routes/Home.svelte'
 import Author from './routes/Author.svelte'
 import Book from './routes/Book.svelte'
@@ -131,7 +109,7 @@ const routes = {
     // This is optional, but if present it must be the last
     '*': NotFound,
 }
-````
+```
 
 Routes must begin with `/` (or `*` for the catch-all route).
 
@@ -143,17 +121,17 @@ Note that the order matters! When your users navigate inside the app, the first 
 
 To display the router, in a Svelte component (usually `App.svelte`), first import the router component:
 
-````js
+```js
 import Router from 'svelte-spa-router'
-````
+```
 
 Then, display the router anywhere you'd like by placing the component in the markup. For example:
 
-````svelte
+```svelte
 <body>
-    <Router {routes}/>
+    <Router {routes} />
 </body>
-````
+```
 
 The `routes` prop is the dictionary defined above.
 
@@ -163,17 +141,17 @@ That's it! You already have all that you need for a fully-functional routing exp
 
 Starting with version 3.0, svelte-spa-router supports dynamically-imported components (via the `import()` construct). The advantage of using dynamic imports is that, if your bundler supports that, you can enable code-splitting and reduce the size of the bundle you send to your users. This has been tested with bundlers including Rollup and Webpack.
 
-To use dynamically-imported components, you need to leverage the `wrap` method (which can be used for a variety of actions, as per the docs on [route wrapping](/Advanced%20Usage.md#route-wrapping)). First, import the `wrap` method:
+To use dynamically-imported components, you need to leverage the `wrap` method (which can be used for a variety of actions, as per the docs on [route wrapping](/AdvancedUsage.md#route-wrapping)). First, import the `wrap` method:
 
 ```js
-import {wrap} from 'svelte-spa-router/wrap'
+import { wrap } from 'svelte-spa-router/wrap'
 ```
 
 Then, in your route definition, wrap your routes using the `wrap` method, passing a function that returns the dynamically-imported component to the `asyncComponent` property:
 
 ```js
 wrap({
-    asyncComponent: () => import('./Foo.svelte')
+    asyncComponent: () => import('./Foo.svelte'),
 })
 ```
 
@@ -182,9 +160,9 @@ wrap({
 
 For example, to make the Author and Book routes from the first example dynamically-imported, we'd update the code to:
 
-````js
+```js
 // Import the wrap method
-import {wrap} from 'svelte-spa-router/wrap'
+import { wrap } from 'svelte-spa-router/wrap'
 
 // Note that Author and Book are not imported here anymore, so they can be imported at runtime
 import Home from './routes/Home.svelte'
@@ -195,69 +173,72 @@ const routes = {
 
     // Wrapping the Author component
     '/author/:first/:last?': wrap({
-        asyncComponent: () => import('./routes/Author.svelte')
+        asyncComponent: () => import('./routes/Author.svelte'),
     }),
 
     // Wrapping the Book component
     '/book/*': wrap({
-        asyncComponent: () => import('./routes/Book.svelte')
+        asyncComponent: () => import('./routes/Book.svelte'),
     }),
 
     // Catch-all route last
     '*': NotFound,
 }
-````
+```
 
 The `wrap` method accepts an object with multiple properties and enables other features, including: setting a "loading" component that is shown while a dynamically-imported component is being requested, adding pre-conditions (route guards), passing static props, and adding custom user data.
 
-You can learn more about all the features of `wrap` in the documentation for [route wrapping](/Advanced%20Usage.md#route-wrapping).
+You can learn more about all the features of `wrap` in the documentation for [route wrapping](/AdvancedUsage.md#route-wrapping).
 
 ### Navigating between pages
 
 You can navigate between pages with normal anchor (`<a>`) tags. For example:
 
-````svelte
+```svelte
 <a href="#/book/123">Thus Spoke Zarathustra</a>
-````
+```
 
 #### The `use:link` action
 
 Rather than having to type `#` before each link, you can also use the `use:link` action:
 
-````svelte
+```svelte
 <script>
-import {link} from 'svelte-spa-router'
+    import { link } from 'svelte-spa-router'
 </script>
+
 <a href="/book/321" use:link>The Little Prince</a>
-````
+```
 
 The `use:link` action accepts an optional parameter `opts`, which can be one of:
 
 - A dictionary `{href: '/foo', disabled: false}` where both keys are optional:
-  - If you set a value for `href`, your link will be updated to point to that address, reactively (this will always take precedence over `href` attributes, if present)
-  - Setting `disabled: true` disables the link, so clicking on that would have no effect
+    - If you set a value for `href`, your link will be updated to point to that address, reactively (this will always take precedence over `href` attributes, if present)
+    - Setting `disabled: true` disables the link, so clicking on that would have no effect
 - A string with a destination (e.g. `/foo`), which is a shorthand to setting `{href: '/foo'}`.
 
 For example:
 
-````svelte
+```svelte
 <script>
-import {link} from 'svelte-spa-router'
-let myLink = "/book/456"
+    import { link } from 'svelte-spa-router'
+    let myLink = '/book/456'
 </script>
+
 <!-- Note the {{...}} notation because we're passing an object as parameter for a Svelte action -->
-<a use:link={{href: myLink, disabled: false}}>The Biggest Princess</a>
-````
+<a use:link={{ href: myLink, disabled: false }}>The Biggest Princess</a>
+```
 
 The above is equivalent to:
 
-````svelte
+```svelte
 <script>
-import {link} from 'svelte-spa-router'
-let myLink = "/book/456"
+    import { link } from 'svelte-spa-router'
+    let myLink = '/book/456'
 </script>
+
 <a use:link={myLink}>The Biggest Princess</a>
-````
+```
 
 Changing the value of `myLink` will reactively update the link's `href` attribute.
 
@@ -265,8 +246,8 @@ Changing the value of `myLink` will reactively update the link's `href` attribut
 
 You can navigate between pages programmatically too:
 
-````js
-import {push, pop, replace} from 'svelte-spa-router'
+```js
+import { push, pop, replace } from 'svelte-spa-router'
 
 // The push(url) method navigates to another page, just like clicking on a link
 push('/book/42')
@@ -277,13 +258,13 @@ pop()
 // The replace(url) method navigates to a new page, but without adding a new entry in the browser's history stack
 // So, clicking on the back button in the browser would not lead to the page users were visiting before the call to replace()
 replace('/book/3')
-````
+```
 
 These methods can be used inside Svelte markup too, for example:
 
-````svelte
+```svelte
 <button onclick={() => push('/page')}>Go somewhere</button>
-````
+```
 
 The `push`, `pop` and `replace` methods perform navigation actions only in the next iteration ("tick") of the JavaScript event loop. This makes it safe to use them also inside `onMount` callbacks within Svelte components.
 
@@ -304,13 +285,19 @@ If your route contains any parameter, they will be made available to your compon
 
 For example, for a route `/name/:first/:last?`, you can create this Svelte component:
 
-````svelte
-<p>Your name is: <b>{params.first}</b> <b>{#if params.last}{params.last}{/if}</b></p>
+```svelte
 <script>
-// You need to define the component prop "params"
-let {params = {}} = $props()
+    // You need to define the component prop "params"
+    let { params = {} } = $props()
 </script>
-````
+
+<p>
+    Your name is: <b>{params.first}</b>
+    <b
+        >{#if params.last}{params.last}{/if}</b
+    >
+</p>
+```
 
 Non-named arguments are returned as `params.wild`.
 
@@ -318,12 +305,13 @@ Non-named arguments are returned as `params.wild`.
 
 You can get the current page from `router.location`.
 
-````svelte
+```svelte
 <script>
-import {router} from 'svelte-spa-router'
+    import { router } from 'svelte-spa-router'
 </script>
+
 <p>The current page is: {router.location}</p>
-````
+```
 
 If you need both location and querystring together, use `router.loc`.
 
@@ -333,20 +321,21 @@ You can also extract "querystring" parameters from the hash of the page. This is
 
 When svelte-spa-router finds a "querystring" in the hash, it separates that from the location and returns it as a string in `router.querystring`. For example:
 
-````svelte
+```svelte
 <script>
-import {router} from 'svelte-spa-router'
+    import { router } from 'svelte-spa-router'
 </script>
+
 <p>The current page is: {router.location}</p>
 <p>The querystring is: {router.querystring}</p>
-````
+```
 
 With the example above, this would print:
 
-````text
+```text
 The current page is: /books
 The querystring is: show=authors,titles&order=1
-````
+```
 
 It's important to note that, to keep this component lightweight, svelte-spa-router **does not parse** the "querystring". If you want to parse the value of `router.querystring`, you can use [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) available in all modern browsers, or third-party modules such as [qs](https://www.npmjs.com/package/qs).
 
@@ -356,23 +345,33 @@ svelte-spa-router has built-in support for automatically marking links as "activ
 
 For example, you can use the code below to add the CSS class `active` to links that are active:
 
-````svelte
+```svelte
 <script>
-import {link} from 'svelte-spa-router'
-import active from 'svelte-spa-router/active'
+    import { link } from 'svelte-spa-router'
+    import active from 'svelte-spa-router/active'
 </script>
 
-<style>
-/* Style for "active" links; need to mark this :global because the router adds the class directly */
-:global(a.active) {
-    color: red;
-}
-</style>
-
-<a href="/hello/user" use:link use:active={{path: '/hello/*', className: 'active', inactiveClassName: 'inactive'}}>Say hi!</a>
-<a href="/hello/user" use:link use:active={'/hello/*'}>Say hi with a default className!</a>
+<a
+    href="/hello/user"
+    use:link
+    use:active={{
+        path: '/hello/*',
+        className: 'active',
+        inactiveClassName: 'inactive',
+    }}>Say hi!</a
+>
+<a href="/hello/user" use:link use:active={'/hello/*'}
+    >Say hi with a default className!</a
+>
 <a href="/hello/user" use:link use:active>Say hi with all default options!</a>
-````
+
+<style>
+    /* Style for "active" links; need to mark this :global because the router adds the class directly */
+    :global(a.active) {
+        color: red;
+    }
+</style>
+```
 
 The `active` action accepts a dictionary `options` as argument:
 
@@ -384,9 +383,9 @@ As a shorthand, instead of passing a dictionary as `options`, you can pass a sin
 
 ### Define routes with custom regular expressions
 
-Since version 1.2 of svelte-spa-router, it's possible to define routes using custom regular expressions too, allowing for greater flexibility. However, this requires defining routes using a JavaScript Map rather than an object:
+It's possible to define routes using custom regular expressions too, allowing for greater flexibility. However, this requires defining routes using a JavaScript Map rather than an object:
 
-````js
+```js
 import Home from './routes/Home.svelte'
 import Name from './routes/Name.svelte'
 import NotFound from './routes/NotFound.svelte'
@@ -404,19 +403,20 @@ routes.set(/^\/buongiorno(\/([a-z]+))/i, Name)
 
 // Catch-all, must be last
 routes.set('*', NotFound)
-````
+```
 
 When you define routes as regular expressions, the `params` prop is populated with an array with the result of the matches from the regular expression.
 
 For example, with this `Name.svelte` route:
 
-````svelte
-<p>Params is: <code>{JSON.stringify(params)}</code></p>
+```svelte
 <script>
-// You need to define the component prop "params"
-let {params = {}} = $props()
+    // You need to define the component prop "params"
+    let { params = {} } = $props()
 </script>
-````
+
+<p>Params is: <code>{JSON.stringify(params)}</code></p>
+```
 
 When visiting `#/hola/amigos`, the params prop will be `["/hola/amigos","amigos"]`.
 
@@ -428,23 +428,23 @@ This is consistent with the results of [`RegExp.prototype.exec()`](https://devel
 > ```js
 > routes.set(/^\/book\/(?<title>[a-z]+)$/, Book)
 > ```
-> 
+>
 > When visiting `/#/book/mytitle`, the `params` prop will be an array with `["/book/mytitle", "mytitle"]`, and `params.groups` will be a dictionary with `{"title": "mytitle"}`.
 
 ## Advanced usage
 
-Check out the [Advanced Usage](/Advanced%20Usage.md) documentation for using:
+Check out the [Advanced Usage](/AdvancedUsage.md) documentation for using:
 
-- [Route wrapping](/Advanced%20Usage.md#route-wrapping), including:
-  - [Dynamically-imported routes and placeholders](/Advanced%20Usage.md#async-routes-and-loading-placeholders)
-  - [Route pre-conditions](/Advanced%20Usage.md#route-pre-conditions) ("route guards")
-  - [Adding user data to routes](/Advanced%20Usage.md#user-data)
-  - [Static props](/Advanced%20Usage.md#static-props)
-- [`onRouteEvent`](/Advanced%20Usage.md#onrouteevent)
-- [`onRouteLoading` and `onRouteLoaded`](/Advanced%20Usage.md#onrouteloading-and-onrouteloaded)
-- [Querystring parsing](/Advanced%20Usage.md#querystring-parsing)
-- [Static props](/Advanced%20Usage.md#static-props)
-- [Route transitions](/Advanced%20Usage.md#route-transitions)
-- [Nested routers](/Advanced%20Usage.md#nested-routers)
-- [Route groups](/Advanced%20Usage.md#route-groups)
-- [Restore scroll position](/Advanced%20Usage.md#restore-scroll-position)
+- [Route wrapping](/AdvancedUsage.md#route-wrapping), including:
+    - [Dynamically-imported routes and placeholders](/AdvancedUsage.md#async-routes-and-loading-placeholders)
+    - [Route pre-conditions](/AdvancedUsage.md#route-pre-conditions) ("route guards")
+    - [Adding user data to routes](/AdvancedUsage.md#user-data)
+    - [Static props](/AdvancedUsage.md#static-props)
+- [`onRouteEvent`](/AdvancedUsage.md#onrouteevent)
+- [`onRouteLoading` and `onRouteLoaded`](/AdvancedUsage.md#onrouteloading-and-onrouteloaded)
+- [Querystring parsing](/AdvancedUsage.md#querystring-parsing)
+- [Static props](/AdvancedUsage.md#static-props)
+- [Route transitions](/AdvancedUsage.md#route-transitions)
+- [Nested routers](/AdvancedUsage.md#nested-routers)
+- [Route groups](/AdvancedUsage.md#route-groups)
+- [Restore scroll position](/AdvancedUsage.md#restore-scroll-position)

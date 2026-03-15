@@ -1,22 +1,25 @@
-<h1>svelte-spa-router sample</h1>
-<h2>Basic routing</h2>
-
-<!-- Navigation links -->
-<ul>
-    <li><a href="#/">Home</a></li>
-    <li><a href="#/hello/svelte">Say hi!</a></li>
-    <li><a href="#/wild/card">Wildcard route</a></li>
-    <li><a href="#/does/not/exist">Not found</a></li>
-</ul>
-
-<!-- Show the router -->
-<Router {routes} />
-
 <script>
-// Import the router component
-// Normally, this would be: `import Router from 'svelte-spa-router'`
-import Router from '../../../Router.svelte'
-
-// Import the list of routes
-import routes from './routes'
+    import Router, { link } from '../../../Router.svelte'
+    import active from '../../../active.js'
+    import { routes } from './routes.js'
 </script>
+
+<nav>
+    <a href="/" use:link use:active>Home</a>
+    <a href="/hello/world" use:link use:active={{ path: '/hello/*' }}>Hello</a>
+    <a href="/lazy" use:link use:active>Lazy</a>
+    <a href="/lazy-with-loading" use:link use:active>Lazy with loading</a>
+</nav>
+
+<main>
+    <Router {routes} />
+</main>
+
+<style>
+    nav a {
+        margin-right: 1rem;
+    }
+    nav :global(a.active) {
+        font-weight: bold;
+    }
+</style>

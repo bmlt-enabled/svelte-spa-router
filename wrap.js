@@ -1,15 +1,15 @@
 /**
  * @typedef {Object} WrappedComponent Object returned by the `wrap` method
- * @property {SvelteComponent} component - Component to load (this is always asynchronous)
+ * @property {AsyncSvelteComponent} component - Component to load (this is always asynchronous)
  * @property {RoutePrecondition[]} [conditions] - Route pre-conditions to validate
  * @property {Object} [props] - Optional dictionary of static props
  * @property {Object} [userData] - Optional user data dictionary
- * @property {bool} _sveltesparouter - Internal flag; always set to true
+ * @property {true} _sveltesparouter - Internal flag; always set to true
  */
 
 /**
  * @callback AsyncSvelteComponent
- * @returns {Promise<SvelteComponent>} Returns a Promise that resolves with a Svelte component
+ * @returns {Promise<any>} Returns a Promise that resolves with a Svelte component
  */
 
 /**
@@ -35,7 +35,7 @@
  * 2. Adding route pre-conditions (e.g. `{conditions: [...]}`)
  * 3. Adding static props that are passed to the component
  * 4. Adding custom userData, which is passed to callback props (e.g. onRouteLoaded) or to route pre-conditions (e.g. `{userData: {foo: 'bar}}`)
- * 
+ *
  * @param {WrapOptions} args - Arguments object
  * @returns {WrappedComponent} Wrapped component
  */
@@ -46,8 +46,10 @@ export function wrap(args) {
 
     // We need to have one and only one of component and asyncComponent
     // This does a "XNOR"
-    if (!args.component == !args.asyncComponent) {
-        throw Error('One and only one of component and asyncComponent is required')
+    if (!args.component === !args.asyncComponent) {
+        throw Error(
+            'One and only one of component and asyncComponent is required',
+        )
     }
 
     // If the component is not async, wrap it into a function returning a Promise
@@ -65,7 +67,10 @@ export function wrap(args) {
             args.conditions = [args.conditions]
         }
         for (let i = 0; i < args.conditions.length; i++) {
-            if (!args.conditions[i] || typeof args.conditions[i] != 'function') {
+            if (
+                !args.conditions[i] ||
+                typeof args.conditions[i] != 'function'
+            ) {
                 throw Error('Invalid parameter conditions[' + i + ']')
             }
         }
@@ -77,17 +82,18 @@ export function wrap(args) {
         args.asyncComponent.loadingParams = args.loadingParams || undefined
     }
 
-    // Returns an object that contains all the functions to execute too
+    // Returns an object that contains all the functions to execute to
     // The _sveltesparouter flag is to confirm the object was created by this router
-    const obj = {
+    return {
         component: args.asyncComponent,
         userData: args.userData,
-        conditions: (args.conditions && args.conditions.length) ? args.conditions : undefined,
-        props: (args.props && Object.keys(args.props).length) ? args.props : {},
-        _sveltesparouter: true
+        conditions:
+            args.conditions && args.conditions.length
+                ? args.conditions
+                : undefined,
+        props: args.props && Object.keys(args.props).length ? args.props : {},
+        _sveltesparouter: true,
     }
-
-    return obj
 }
 
 export default wrap

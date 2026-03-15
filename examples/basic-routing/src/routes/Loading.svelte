@@ -2,4 +2,4 @@
     const { params } = $props()
 </script>
 
-<h1>Hello, {params.name}!</h1>
+<p><em>{params?.message ?? 'Loading...'}</em></p>
