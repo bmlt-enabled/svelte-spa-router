@@ -1,6 +1,6 @@
-# svelte-spa-router
+# @bmlt-enabled/svelte-spa-router
 
-This module is a router for [Svelte 5](https://github.com/sveltejs/svelte) applications (prior versions support Svelte 3 and 4), specifically optimized for Single Page Applications (SPA).
+This module is a router for [Svelte 5](https://github.com/sveltejs/svelte) applications, specifically optimized for Single Page Applications (SPA).
 
 Main features:
 
@@ -24,62 +24,38 @@ Hash-based routing is simpler, works well even without a server, and it's genera
 
 Check out the code in the [examples](/examples) folder for some usage examples.
 
-To run the samples, clone the repository, install the dependencies, then build each sample using Rollup:
+To run the example, clone the repository, install the dependencies, then start the dev server:
 
 ```sh
-git clone https://github.com/ItalyPaleAle/svelte-spa-router
+git clone https://github.com/bmlt-enabled/svelte-spa-router
 cd svelte-spa-router
 npm install
 
-# Navigate to a sample
-cd examples/…
-# For example
-cd examples/basic-routing
-
-# Build and run (in the folder of a sample)
-npx rollup -c
-npx serve -n -l 5050 dist
+npm run dev:example
 ```
 
-The sample will be running at http://localhost:5050
+The example will be running at http://localhost:5050
 
-## Starter template
+## Using @bmlt-enabled/svelte-spa-router
 
-> This template is outdated for Svelte 5
-
-You can find a starter template with Svelte 4 and svelte-spa-router at [italypaleale/svelte-spa-router-template](https://github.com/italypaleale/svelte-spa-router-template).
-
-To use the template:
-
-```sh
-npx degit italypaleale/svelte-spa-router-template svelte-app
-cd svelte-app
-```
-
-More information can be found on the [template's repo](https://github.com/italypaleale/svelte-spa-router-template).
-
-## Using svelte-spa-router
-
-You can include the router in any project using Svelte 5 (older major versions support Svelte 3 and 4).
+You can include the router in any project using Svelte 5.
 
 ### Install from NPM
 
-To add svelte-spa-router to your project:
-
 ```sh
-npm install svelte-spa-router
+npm install @bmlt-enabled/svelte-spa-router
 ```
 
 ### Supported browsers
 
-svelte-spa-router aims to support modern browsers, including recent versions of:
+@bmlt-enabled/svelte-spa-router aims to support modern browsers, including recent versions of:
 
 - Chrome
 - Edge ("traditional" and Chromium-based)
 - Firefox
 - Safari
 
-Support for Internet Explorer is not a goal for this project. Some users have reportedly been able to use svelte-spa-router with IE11 after transpilation (e.g. with Babel), but this is not guaranteed.
+Support for Internet Explorer is not a goal for this project.
 
 ### Define your routes
 
@@ -122,7 +98,7 @@ Note that the order matters! When your users navigate inside the app, the first 
 To display the router, in a Svelte component (usually `App.svelte`), first import the router component:
 
 ```js
-import Router from 'svelte-spa-router'
+import Router from '@bmlt-enabled/svelte-spa-router'
 ```
 
 Then, display the router anywhere you'd like by placing the component in the markup. For example:
@@ -139,12 +115,12 @@ That's it! You already have all that you need for a fully-functional routing exp
 
 ### Dynamically-imported components and code-splitting
 
-Starting with version 3.0, svelte-spa-router supports dynamically-imported components (via the `import()` construct). The advantage of using dynamic imports is that, if your bundler supports that, you can enable code-splitting and reduce the size of the bundle you send to your users. This has been tested with bundlers including Rollup and Webpack.
+@bmlt-enabled/svelte-spa-router supports dynamically-imported components (via the `import()` construct). The advantage of using dynamic imports is that your bundler can enable code-splitting and reduce the size of the bundle sent to your users.
 
 To use dynamically-imported components, you need to leverage the `wrap` method (which can be used for a variety of actions, as per the docs on [route wrapping](/AdvancedUsage.md#route-wrapping)). First, import the `wrap` method:
 
 ```js
-import { wrap } from 'svelte-spa-router/wrap'
+import { wrap } from '@bmlt-enabled/svelte-spa-router/wrap'
 ```
 
 Then, in your route definition, wrap your routes using the `wrap` method, passing a function that returns the dynamically-imported component to the `asyncComponent` property:
@@ -162,7 +138,7 @@ For example, to make the Author and Book routes from the first example dynamical
 
 ```js
 // Import the wrap method
-import { wrap } from 'svelte-spa-router/wrap'
+import { wrap } from '@bmlt-enabled/svelte-spa-router/wrap'
 
 // Note that Author and Book are not imported here anymore, so they can be imported at runtime
 import Home from './routes/Home.svelte'
@@ -204,7 +180,7 @@ Rather than having to type `#` before each link, you can also use the `use:link`
 
 ```svelte
 <script>
-    import { link } from 'svelte-spa-router'
+    import { link } from '@bmlt-enabled/svelte-spa-router'
 </script>
 
 <a href="/book/321" use:link>The Little Prince</a>
@@ -221,7 +197,7 @@ For example:
 
 ```svelte
 <script>
-    import { link } from 'svelte-spa-router'
+    import { link } from '@bmlt-enabled/svelte-spa-router'
     let myLink = '/book/456'
 </script>
 
@@ -233,7 +209,7 @@ The above is equivalent to:
 
 ```svelte
 <script>
-    import { link } from 'svelte-spa-router'
+    import { link } from '@bmlt-enabled/svelte-spa-router'
     let myLink = '/book/456'
 </script>
 
@@ -247,7 +223,7 @@ Changing the value of `myLink` will reactively update the link's `href` attribut
 You can navigate between pages programmatically too:
 
 ```js
-import { push, pop, replace } from 'svelte-spa-router'
+import { push, pop, replace } from '@bmlt-enabled/svelte-spa-router'
 
 // The push(url) method navigates to another page, just like clicking on a link
 push('/book/42')
@@ -272,7 +248,7 @@ These functions return a Promise that resolves with no value once the navigation
 
 ### Parameters from routes
 
-svelte-spa-router uses [regexparam](https://github.com/lukeed/regexparam) to parse routes, so you can add optional parameters to the route. Basic syntax is:
+@bmlt-enabled/svelte-spa-router uses [regexparam](https://github.com/lukeed/regexparam) to parse routes, so you can add optional parameters to the route. Basic syntax is:
 
 - `/path` matches `/path` exactly (and only that)
 - `/path/:id` matches `/path/` followed by any string, which is a named argument `id`
@@ -307,7 +283,7 @@ You can get the current page from `router.location`.
 
 ```svelte
 <script>
-    import { router } from 'svelte-spa-router'
+    import { router } from '@bmlt-enabled/svelte-spa-router'
 </script>
 
 <p>The current page is: {router.location}</p>
@@ -319,11 +295,11 @@ If you need both location and querystring together, use `router.loc`.
 
 You can also extract "querystring" parameters from the hash of the page. This isn't the _real_ querystring, as it's located after the `#` character in the URL, but it can be used in a similar way. For example: `#/books?show=authors,titles&order=1`.
 
-When svelte-spa-router finds a "querystring" in the hash, it separates that from the location and returns it as a string in `router.querystring`. For example:
+When @bmlt-enabled/svelte-spa-router finds a "querystring" in the hash, it separates that from the location and returns it as a string in `router.querystring`. For example:
 
 ```svelte
 <script>
-    import { router } from 'svelte-spa-router'
+    import { router } from '@bmlt-enabled/svelte-spa-router'
 </script>
 
 <p>The current page is: {router.location}</p>
@@ -337,18 +313,18 @@ The current page is: /books
 The querystring is: show=authors,titles&order=1
 ```
 
-It's important to note that, to keep this component lightweight, svelte-spa-router **does not parse** the "querystring". If you want to parse the value of `router.querystring`, you can use [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) available in all modern browsers, or third-party modules such as [qs](https://www.npmjs.com/package/qs).
+To keep this component lightweight, @bmlt-enabled/svelte-spa-router **does not parse** the "querystring". If you want to parse the value of `router.querystring`, you can use [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) available in all modern browsers, or third-party modules such as [qs](https://www.npmjs.com/package/qs).
 
 ### Highlight active links
 
-svelte-spa-router has built-in support for automatically marking links as "active", with the `use:active` action.
+@bmlt-enabled/svelte-spa-router has built-in support for automatically marking links as "active", with the `use:active` action.
 
 For example, you can use the code below to add the CSS class `active` to links that are active:
 
 ```svelte
 <script>
-    import { link } from 'svelte-spa-router'
-    import active from 'svelte-spa-router/active'
+    import { link } from '@bmlt-enabled/svelte-spa-router'
+    import active from '@bmlt-enabled/svelte-spa-router/active'
 </script>
 
 <a
