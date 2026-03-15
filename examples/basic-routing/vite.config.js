@@ -3,5 +3,5 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 
 export default defineConfig({
     root: 'examples/basic-routing',
-    plugins: [svelte()],
+    plugins: [svelte({ configFile: false })],
 })
