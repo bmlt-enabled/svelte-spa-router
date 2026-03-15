@@ -26,17 +26,17 @@ tests/
 
 ## Scripts
 
-| Command | Description |
-|---|---|
-| `npm run lint` | Run ESLint |
-| `npm run lint:fix` | Auto-fix ESLint issues |
-| `npm run format` | Format all files with Prettier |
-| `npm run format:check` | Check formatting without writing |
-| `npm run test:unit` | Run Vitest unit tests |
-| `npm run test:e2e` | Run Playwright e2e tests |
-| `npm run test` | Run all tests |
-| `npm run dev:example` | Start example app at http://localhost:5050 |
-| `npm run dev:test` | Start e2e test app at http://localhost:5051 |
+| Command                | Description                                 |
+| ---------------------- | ------------------------------------------- |
+| `npm run lint`         | Run ESLint                                  |
+| `npm run lint:fix`     | Auto-fix ESLint issues                      |
+| `npm run format`       | Format all files with Prettier              |
+| `npm run format:check` | Check formatting without writing            |
+| `npm run test:unit`    | Run Vitest unit tests                       |
+| `npm run test:e2e`     | Run Playwright e2e tests                    |
+| `npm run test`         | Run all tests                               |
+| `npm run dev:example`  | Start example app at http://localhost:5050  |
+| `npm run dev:test`     | Start e2e test app at http://localhost:5051 |
 
 ## Code style
 

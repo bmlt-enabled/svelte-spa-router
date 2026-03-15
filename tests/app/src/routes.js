@@ -3,6 +3,7 @@ import About from './routes/About.svelte'
 import User from './routes/User.svelte'
 import NotFound from './routes/NotFound.svelte'
 import Loading from './routes/Loading.svelte'
+import Event from './routes/Event.svelte'
 import { wrap } from '../../../wrap.js'
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -54,5 +55,7 @@ export const routes = {
         userData: { role: 'admin' },
         conditions: [(detail) => detail.userData?.role === 'admin'],
     }),
+    // route that fires onRouteEvent
+    '/event': Event,
     '*': NotFound,
 }
