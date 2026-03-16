@@ -1,6 +1,6 @@
 <script>
     import Router, { link, push, pop, replace } from '../../../Router.svelte'
-    import active from '../../../active.js'
+    import active from '../../../active.svelte.js'
     import { routes, wasSecondConditionCalled } from './routes.js'
 
     let conditionsFailed = $state(false)

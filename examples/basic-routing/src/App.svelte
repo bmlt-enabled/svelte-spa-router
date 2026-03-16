@@ -1,6 +1,6 @@
 <script>
     import Router, { link } from '../../../Router.svelte'
-    import active from '../../../active.js'
+    import active from '../../../active.svelte.js'
     import { routes } from './routes.js'
 </script>
 

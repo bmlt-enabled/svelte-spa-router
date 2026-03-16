@@ -1,5 +1,5 @@
 <script module>
-    import { tick } from 'svelte'
+    import { tick, untrack } from 'svelte'
 
     class Router {
         /**
@@ -280,7 +280,6 @@
 </script>
 
 <script>
-    import { onDestroy } from 'svelte'
     import { parse } from 'regexparam'
 
     const {
@@ -323,7 +322,7 @@
          * Initializes the object and creates a regular expression from the path, using regexparam.
          *
          * @param {string} path - Path to the route (must start with '/' or '*')
-         * @param {import('svelte').Component|WrappedComponent} component - Svelte component for the route, optionally wrapped
+         * @param {SvelteComponent|WrappedComponent} component - Svelte component for the route, optionally wrapped
          */
         constructor(path, component) {
             if (
@@ -408,9 +407,7 @@
 
             // If the input was a regular expression, this._keys would be false, so return matches as is
             if (this._keys === false) {
-                return /** @type {Record<string, string>} */ (
-                    /** @type {unknown} */ (matches)
-                )
+                return matches
             }
 
             const out = {}
@@ -430,6 +427,7 @@
 
         /**
          * Dictionary with route details passed to pre-conditions and callback props.
+         * DOM custom events (`routeLoading`, `routeLoaded`, `conditionsFailed`) are still emitted for backwards compatibility.
          * @typedef {Object} RouteDetail
          * @property {string|RegExp} route - Route matched as defined in the route definition (could be a string or a reguar expression object)
          * @property {string} location - Location path
@@ -479,7 +477,6 @@
 
     let previousScrollState = $state(null)
     let componentObj = null
-    let popStateChanged = null
 
     // Effects
     $effect(() => {
@@ -488,7 +485,7 @@
 
     $effect(() => {
         if (restoreScrollState) {
-            popStateChanged = (event) => {
+            const popStateChanged = (event) => {
                 if (
                     event.state &&
                     (event.state.__svelte_spa_router_scrollY ||
@@ -517,11 +514,13 @@
         event(detail)
     }
 
-    // Main routing effect
     $effect(() => {
+        // React to loc changing and untrack everything else to prevent accidental dependencies;
+        // cancel operation after async work in case a new loc change happened in the meantime.
         const newLoc = router.loc
         let cancelled = false
-        ;(async () => {
+
+        untrack(async () => {
             // Find a route matching the location
             let i = 0
             while (i < routesList.length) {
@@ -545,13 +544,20 @@
                 }
 
                 if (!(await routesList[i].checkConditions(detail))) {
+                    if (cancelled) {
+                        return
+                    }
                     component = null
                     componentObj = null
-                    await dispatchNextTick(onConditionsFailed, detail)
+                    dispatchNextTick(onConditionsFailed, detail)
                     return
                 }
 
-                await dispatchNextTick(onRouteLoading, { ...detail })
+                if (cancelled) {
+                    return
+                }
+
+                dispatchNextTick(onRouteLoading, { ...detail })
 
                 const obj = routesList[i].component
                 if (componentObj !== obj) {
@@ -561,7 +567,7 @@
                         componentParams = obj.loadingParams
                         props = {}
                         const comp = obj.loading
-                        await dispatchNextTick(onRouteLoaded, {
+                        dispatchNextTick(onRouteLoaded, {
                             ...detail,
                             component: comp,
                             name: comp.name,
@@ -610,15 +616,11 @@
             component = null
             componentObj = null
             router._params = undefined
-        })()
+        })
+
         return () => {
             cancelled = true
         }
-    })
-
-    onDestroy(() => {
-        popStateChanged &&
-            window.removeEventListener('popstate', popStateChanged)
     })
 </script>
 

@@ -1,15 +1,15 @@
 /**
  * @typedef {Object} WrappedComponent Object returned by the `wrap` method
- * @property {AsyncSvelteComponent} component - Component to load (this is always asynchronous)
+ * @property {SvelteComponent} component - Component to load (this is always asynchronous)
  * @property {RoutePrecondition[]} [conditions] - Route pre-conditions to validate
  * @property {Object} [props] - Optional dictionary of static props
  * @property {Object} [userData] - Optional user data dictionary
- * @property {true} _sveltesparouter - Internal flag; always set to true
+ * @property {bool} _sveltesparouter - Internal flag; always set to true
  */
 
 /**
  * @callback AsyncSvelteComponent
- * @returns {Promise<any>} Returns a Promise that resolves with a Svelte component
+ * @returns {Promise<SvelteComponent>} Returns a Promise that resolves with a Svelte component
  */
 
 /**

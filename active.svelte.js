@@ -30,14 +30,17 @@ function toggleClasses(el, className, shouldAdd) {
 }
 
 // Listen to changes in the location
-function updateLocation() {
-    const value = router.loc
-    location =
-        value.location + (value.querystring ? '?' + value.querystring : '')
-    nodes.map(checkActive)
-}
-window.addEventListener('hashchange', updateLocation, false)
-updateLocation()
+$effect.root(() => {
+    $effect(() => {
+        const value = router.loc
+        // Update the location
+        location =
+            value.location + (value.querystring ? '?' + value.querystring : '')
+
+        // Update all nodes
+        nodes.map(checkActive)
+    })
+})
 
 /**
  * @typedef {Object} ActiveOptions
@@ -71,7 +74,7 @@ export default function active(node, opts) {
     // Path defaults to link target
     if (!opts.path && node.hasAttribute('href')) {
         opts.path = node.getAttribute('href')
-        if (opts.path && opts.path.length > 1 && opts.path.charAt(0) === '#') {
+        if (opts.path && opts.path.length > 1 && opts.path.charAt(0) == '#') {
             opts.path = opts.path.substring(1)
         }
     }
@@ -86,7 +89,7 @@ export default function active(node, opts) {
         !opts.path ||
         (typeof opts.path == 'string' &&
             (opts.path.length < 1 ||
-                (opts.path.charAt(0) !== '/' && opts.path.charAt(0) !== '*')))
+                (opts.path.charAt(0) != '/' && opts.path.charAt(0) != '*')))
     ) {
         throw Error('Invalid value for "path" argument')
     }

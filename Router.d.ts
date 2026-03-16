@@ -1,6 +1,7 @@
 ///<reference types="svelte" />
 
 import type { Component } from 'svelte'
+import { Readable } from 'svelte/store'
 
 /** Dictionary with route details passed to pre-conditions and callback props */
 export interface RouteDetail {
@@ -33,7 +34,9 @@ export interface RouteDetailLoaded extends RouteDetail {
  * This is a Svelte component loaded asynchronously.
  * It's meant to be used with the `import()` function, such as `() => import('Foo.svelte')}`
  */
-export type AsyncSvelteComponent = () => Promise<any>
+export type AsyncSvelteComponent = () => Promise<{
+    default: Component<any, any>
+}>
 
 /**
  * Route pre-condition function. This is a callback that receives a RouteDetail object as argument containing information on the route that we're trying to load.
@@ -51,7 +54,7 @@ export type RoutePrecondition = (
 /** Object returned by the `wrap` method */
 export interface WrappedComponent {
     /** Component to load (this is always asynchronous) */
-    component: AsyncSvelteComponent
+    component: Component<any, any>
 
     /** Route pre-conditions to validate */
     conditions?: RoutePrecondition[]
@@ -62,8 +65,11 @@ export interface WrappedComponent {
     /** Optional user data dictionary */
     userData?: object
 
-    /** Internal flag used by the router to identify wrapped routes */
-    _sveltesparouter: true
+    /**
+     * Internal flag used by the router to identify wrapped routes
+     * @internal
+     */
+    _sveltesparouter?: boolean
 }
 
 /**
@@ -102,6 +108,8 @@ export type LinkActionUpdateFunc =
     | ((opts?: LinkActionOpts) => void)
     | ((hrefVar?: string) => void)
 
+/** Type for backwards-compatible (typo: Upate) */
+export type LinkActionUpateFunc = LinkActionUpdateFunc
 /**
  * Svelte Action that enables a link element (`<a>`) to use our history management.
  *
@@ -113,7 +121,6 @@ export type LinkActionUpdateFunc =
  *
  * @param node - The target node (automatically set by Svelte). Must be an anchor tag (`<a>`) with a href attribute starting in `/`
  * @param opts - Dictionary with options for the link
- * @param hrefVar - A string to use in place of the link's href attribute. Using this allows for updating link's targets reactively. This is a shorthand for opts.href
  */
 export function link(
     node: HTMLElement,
@@ -132,6 +139,12 @@ interface Location {
     /** Querystring from the hash, as a string not parsed */
     querystring?: string
 }
+
+/**
+ * Readable store that returns the current full location (incl. querystring)
+ * @deprecated Use `router.loc` instead.
+ */
+export const loc: Readable<Location>
 
 /**
  * Router state object, containing the current location, querystring and params.
@@ -154,6 +167,25 @@ export interface RouterState {
  * Router state object, containing the current location, querystring and params.
  */
 export const router: RouterState
+
+/**
+ * Readable store that returns the current location
+ * @deprecated Use `router.location` instead.
+ */
+export const location: Readable<string>
+
+/**
+ * Readable store that returns the current querystring
+ * @deprecated Use `router.querystring` instead.
+ */
+export const querystring: Readable<string | undefined>
+
+/**
+ * Readable store that returns the current list of params
+ * @deprecated Use `router.params` instead.
+ */
+export const params: Readable<Record<string, string> | undefined>
+// Note: the above is implemented as writable but exported as readable because consumers should not modify the value
 
 /** List of routes */
 export type RouteDefinition =

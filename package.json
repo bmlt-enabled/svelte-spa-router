@@ -1,6 +1,6 @@
 {
     "name": "@bmlt-enabled/svelte-spa-router",
-    "version": "5.0.4",
+    "version": "5.0.5",
     "description": "Router for SPAs using Svelte 5",
     "main": "Router.svelte",
     "svelte": "Router.svelte",
@@ -9,7 +9,7 @@
     "exports": {
         "./active": {
             "types": "./active.d.ts",
-            "import": "./active.js"
+            "import": "./active.svelte.js"
         },
         "./wrap": {
             "types": "./wrap.d.ts",
@@ -23,7 +23,7 @@
     "files": [
         "Router.svelte",
         "Router.d.ts",
-        "active.js",
+        "active.svelte.js",
         "active.d.ts",
         "wrap.js",
         "wrap.d.ts",
