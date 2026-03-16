@@ -408,7 +408,9 @@
 
             // If the input was a regular expression, this._keys would be false, so return matches as is
             if (this._keys === false) {
-                return matches
+                return /** @type {Record<string, string>} */ (
+                    /** @type {unknown} */ (matches)
+                )
             }
 
             const out = {}
