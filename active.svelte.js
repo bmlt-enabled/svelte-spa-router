@@ -1,4 +1,4 @@
-import { parse } from 'regexparam'
+import { parse } from './regexparam.js'
 import { router } from './Router.svelte'
 
 // List of nodes to update

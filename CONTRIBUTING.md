@@ -11,8 +11,9 @@ npx playwright install chromium
 
 ```
 Router.svelte       # main router component + exported actions/helpers
-active.js           # use:active svelte action
+active.svelte.js    # use:active svelte action
 wrap.js             # wrap() helper for async routes and guards
+regexparam.js       # vendored copy of regexparam (route pattern parser)
 *.d.ts              # TypeScript declarations
 
 examples/

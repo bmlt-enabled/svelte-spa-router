@@ -6,7 +6,7 @@ Main features:
 
 - Leverages **hash-based routing**, which is optimal for SPAs and doesn't require any server-side processing
 - Insanely simple to use, and has a minimal footprint
-- Uses the tiny [regexparam](https://github.com/lukeed/regexparam) for parsing routes, with support for parameters (e.g. `/book/:id?`) and more
+- Uses a vendored copy of the tiny [regexparam](https://github.com/lukeed/regexparam) for parsing routes, with support for parameters (e.g. `/book/:id?`) and more
 
 This module is released under MIT license, forked from [ItalyPaleAle/svelte-spa-router](https://github.com/ItalyPaleAle/svelte-spa-router).
 
@@ -246,14 +246,14 @@ These functions return a Promise that resolves with no value once the navigation
 
 ### Parameters from routes
 
-@bmlt-enabled/svelte-spa-router uses [regexparam](https://github.com/lukeed/regexparam) to parse routes, so you can add optional parameters to the route. Basic syntax is:
+@bmlt-enabled/svelte-spa-router uses a vendored copy of [regexparam](https://github.com/lukeed/regexparam) (`regexparam.js`) to parse routes, so you can add optional parameters to the route. Basic syntax is:
 
 - `/path` matches `/path` exactly (and only that)
 - `/path/:id` matches `/path/` followed by any string, which is a named argument `id`
 - `/path/:id/:version?` allows for an optional second named argument `version`
 - `/path/*` matches `/path/` followed by anything, using a non-named argument
 
-_Please refer to the documentation of regexparam for more details._
+_Please refer to [REGEXPARAM.md](REGEXPARAM.md) for more details._
 
 If your route contains any parameter, they will be made available to your component inside the `params` dictionary.
 

@@ -1,6 +1,6 @@
 {
     "name": "@bmlt-enabled/svelte-spa-router",
-    "version": "5.0.5",
+    "version": "5.0.7",
     "description": "Router for SPAs using Svelte 5",
     "main": "Router.svelte",
     "svelte": "Router.svelte",
@@ -27,6 +27,8 @@
         "active.d.ts",
         "wrap.js",
         "wrap.d.ts",
+        "regexparam.js",
+        "regexparam.d.ts",
         "LICENSE",
         "README.md",
         "CONTRIBUTING.md"
@@ -58,9 +60,6 @@
         "url": "https://github.com/bmlt-enabled/svelte-spa-router/issues"
     },
     "homepage": "https://github.com/bmlt-enabled/svelte-spa-router#readme",
-    "dependencies": {
-        "regexparam": "3.0.0"
-    },
     "devDependencies": {
         "@playwright/test": "^1.58.2",
         "@sveltejs/vite-plugin-svelte": "^7.0.0",

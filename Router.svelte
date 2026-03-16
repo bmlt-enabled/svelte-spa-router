@@ -280,7 +280,7 @@
 </script>
 
 <script>
-    import { parse } from 'regexparam'
+    import { parse } from './regexparam.js'
 
     const {
         /**
