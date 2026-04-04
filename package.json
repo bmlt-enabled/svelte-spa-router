@@ -36,8 +36,8 @@
     "scripts": {
         "lint": "npx eslint .",
         "lint:fix": "npx eslint --fix .",
-        "format": "npx prettier --write .",
-        "format:check": "npx prettier --check .",
+        "format": "npx prettier --write \"**/*.{js,ts,svelte}\"",
+        "format:check": "npx prettier --check \"**/*.{js,ts,svelte}\"",
         "test:unit": "npx vitest run",
         "test:e2e": "npx playwright test",
         "test": "npm run test:unit && npm run test:e2e",
