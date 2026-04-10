@@ -1,6 +1,13 @@
 <script module>
     import { tick, untrack } from 'svelte'
 
+    /**
+     * Whether the router uses hash-based routing (default) or History API path-based routing.
+     * Set via the `hashMode` prop on the Router component.
+     * @private
+     */
+    let _hashMode = true
+
     class Router {
         /**
          * The current full location (incl. querystring)
@@ -15,6 +22,9 @@
          */
         _querystring = $derived(this._loc.querystring)
         _params = $state.raw(undefined)
+
+        /** @private */
+        _removeListener = null
 
         /**
          * The current full location (incl. querystring)
@@ -39,9 +49,31 @@
         }
 
         constructor() {
-            window.addEventListener('hashchange', () => {
-                this._loc = getLocation()
-            })
+            this._setupListener()
+        }
+
+        /** @private */
+        _setupListener() {
+            // Remove previous listener if any
+            if (this._removeListener) {
+                this._removeListener()
+            }
+
+            if (_hashMode) {
+                const handler = () => {
+                    this._loc = getLocation()
+                }
+                window.addEventListener('hashchange', handler)
+                this._removeListener = () =>
+                    window.removeEventListener('hashchange', handler)
+            } else {
+                const handler = () => {
+                    this._loc = getLocation()
+                }
+                window.addEventListener('popstate', handler)
+                this._removeListener = () =>
+                    window.removeEventListener('popstate', handler)
+            }
         }
     }
 
@@ -51,32 +83,52 @@
     export const router = new Router()
 
     /**
+     * Sets the routing mode. Call this before the Router component mounts, or use the `hashMode` prop.
+     *
+     * @param {boolean} hashMode - If true (default), uses hash-based routing. If false, uses History API path-based routing.
+     */
+    export function setHashMode(hashMode) {
+        _hashMode = hashMode
+        router._loc = getLocation()
+        router._setupListener()
+    }
+
+    /**
      * @typedef {Object} Location
      * @property {string} location - Location (page/view), for example `/book`
      * @property {string} [querystring] - Querystring from the hash, as a string not parsed
      */
     /**
-     * Returns the current location from the hash.
+     * Returns the current location from the hash or path, depending on the routing mode.
      *
      * @returns {Location} Location object
      * @private
      */
     function getLocation() {
-        const hashPosition = window.location.href.indexOf('#/')
-        let location =
-            hashPosition > -1
-                ? window.location.href.slice(hashPosition + 1)
-                : '/'
+        if (_hashMode) {
+            const hashPosition = window.location.href.indexOf('#/')
+            let location =
+                hashPosition > -1
+                    ? window.location.href.slice(hashPosition + 1)
+                    : '/'
 
-        // Check if there's a querystring
-        const qsPosition = location.indexOf('?')
-        let querystring = ''
-        if (qsPosition > -1) {
-            querystring = location.slice(qsPosition + 1)
-            location = location.slice(0, qsPosition)
+            // Check if there's a querystring
+            const qsPosition = location.indexOf('?')
+            let querystring = ''
+            if (qsPosition > -1) {
+                querystring = location.slice(qsPosition + 1)
+                location = location.slice(0, qsPosition)
+            }
+
+            return { location, querystring }
+        } else {
+            const location = window.location.pathname || '/'
+            const querystring = window.location.search
+                ? window.location.search.slice(1)
+                : ''
+
+            return { location, querystring }
         }
-
-        return { location, querystring }
     }
 
     /**
@@ -106,8 +158,18 @@
             },
             undefined,
         )
-        window.location.hash =
-            (location.charAt(0) === '#' ? '' : '#') + location
+
+        if (_hashMode) {
+            window.location.hash =
+                (location.charAt(0) === '#' ? '' : '#') + location
+        } else {
+            // Strip any leading #/ for path mode
+            const dest =
+                location.charAt(0) === '#' ? location.slice(1) : location
+            window.history.pushState({}, undefined, dest)
+            // pushState doesn't fire popstate, so update manually
+            router._loc = getLocation()
+        }
     }
 
     /**
@@ -140,23 +202,44 @@
         // Execute this code when the current call stack is complete
         await tick()
 
-        const dest = (location.charAt(0) === '#' ? '' : '#') + location
-        try {
-            const newState = {
-                ...history.state,
+        if (_hashMode) {
+            const dest = (location.charAt(0) === '#' ? '' : '#') + location
+            try {
+                const newState = {
+                    ...history.state,
+                }
+                delete newState['__svelte_spa_router_scrollX']
+                delete newState['__svelte_spa_router_scrollY']
+                window.history.replaceState(newState, undefined, dest)
+            } catch (_e) {
+                // eslint-disable-next-line no-console
+                console.warn(
+                    "Caught exception while replacing the current page. If you're running this in the Svelte REPL, please note that the `replace` method might not work in this environment.",
+                )
             }
-            delete newState['__svelte_spa_router_scrollX']
-            delete newState['__svelte_spa_router_scrollY']
-            window.history.replaceState(newState, undefined, dest)
-        } catch (_e) {
-            // eslint-disable-next-line no-console
-            console.warn(
-                "Caught exception while replacing the current page. If you're running this in the Svelte REPL, please note that the `replace` method might not work in this environment.",
-            )
-        }
 
-        // The method above doesn't trigger the hashchange event, so let's do that manually
-        window.dispatchEvent(new Event('hashchange'))
+            // The method above doesn't trigger the hashchange event, so let's do that manually
+            window.dispatchEvent(new Event('hashchange'))
+        } else {
+            const dest =
+                location.charAt(0) === '#' ? location.slice(1) : location
+            try {
+                const newState = {
+                    ...history.state,
+                }
+                delete newState['__svelte_spa_router_scrollX']
+                delete newState['__svelte_spa_router_scrollY']
+                window.history.replaceState(newState, undefined, dest)
+            } catch (_e) {
+                // eslint-disable-next-line no-console
+                console.warn(
+                    "Caught exception while replacing the current page. If you're running this in the Svelte REPL, please note that the `replace` method might not work in this environment.",
+                )
+            }
+
+            // replaceState doesn't trigger popstate, so update manually
+            router._loc = getLocation()
+        }
     }
 
     /**
@@ -236,12 +319,22 @@
     function updateLinkHref(node, opts) {
         let href = opts.href || node.getAttribute('href')
 
-        // Destination must start with '/' or '#/'
-        if (href && href.charAt(0) === '/') {
-            // Add # to the href attribute
-            href = '#' + href
-        } else if (!href || href.length < 2 || href.slice(0, 2) !== '#/') {
-            throw Error('Invalid value for "href" attribute: ' + href)
+        if (_hashMode) {
+            // Destination must start with '/' or '#/'
+            if (href && href.charAt(0) === '/') {
+                // Add # to the href attribute
+                href = '#' + href
+            } else if (!href || href.length < 2 || href.slice(0, 2) !== '#/') {
+                throw Error('Invalid value for "href" attribute: ' + href)
+            }
+        } else {
+            // In path mode, strip any leading '#' and ensure it starts with '/'
+            if (href && href.slice(0, 2) === '#/') {
+                href = href.slice(1)
+            }
+            if (!href || href.charAt(0) !== '/') {
+                throw Error('Invalid value for "href" attribute: ' + href)
+            }
         }
 
         node.setAttribute('href', href)
@@ -274,8 +367,16 @@
             },
             undefined,
         )
-        // This will force an update as desired, but this time our scroll state will be attached
-        window.location.hash = href
+
+        if (_hashMode) {
+            // This will force an update as desired, but this time our scroll state will be attached
+            window.location.hash = href
+        } else {
+            // In path mode, use pushState and manually update the router
+            const dest = href.charAt(0) === '#' ? href.slice(1) : href
+            window.history.pushState({}, undefined, dest)
+            router._loc = getLocation()
+        }
     }
 </script>
 
@@ -304,6 +405,14 @@
          */
         prefix = '',
         /**
+         * If set to true, uses hash-based routing (default). If set to false, uses the History API
+         * for clean URLs without the hash fragment (e.g. `/books` instead of `#/books`).
+         *
+         * Note: When using path-based routing (hashMode=false), your server must be configured to
+         * serve the app for all routes (i.e., redirect all requests to index.html).
+         */
+        hashMode = true,
+        /**
          * If set to true, the router will restore scroll positions on back navigation
          * and scroll to top on forward navigation.
          */
@@ -313,6 +422,14 @@
         onRouteLoading = () => {},
         onRouteEvent = () => {},
     } = $props()
+
+    // svelte-ignore state_referenced_locally
+    // hashMode is static configuration, initial capture is intended
+    if (!hashMode && _hashMode) {
+        setHashMode(false)
+    } else if (hashMode && !_hashMode) {
+        setHashMode(true)
+    }
 
     /**
      * Container for a route: path, component

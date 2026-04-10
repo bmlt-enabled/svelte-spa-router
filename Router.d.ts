@@ -73,6 +73,13 @@ export interface WrappedComponent {
 }
 
 /**
+ * Sets the routing mode.
+ *
+ * @param hashMode - If true (default), uses hash-based routing. If false, uses History API path-based routing.
+ */
+export function setHashMode(hashMode: boolean): void
+
+/**
  * Navigates to a new page programmatically.
  *
  * @param location Path to navigate to (must start with `/` or '#/')
@@ -214,6 +221,14 @@ export interface RouterProps {
      * Optional prefix for the routes in this router. This is useful for example in the case of nested routers.
      */
     prefix?: string | RegExp
+    /**
+     * If set to true (default), uses hash-based routing. If set to false, uses the History API
+     * for clean URLs without the hash fragment (e.g. `/books` instead of `#/books`).
+     *
+     * Note: When using path-based routing (hashMode=false), your server must be configured to
+     * serve the app for all routes (i.e., redirect all requests to index.html).
+     */
+    hashMode?: boolean
     /**
      * If set to true, the router will restore scroll positions on back navigation
      * and scroll to top on forward navigation.

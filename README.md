@@ -4,21 +4,38 @@ This module is a router for [Svelte 5](https://github.com/sveltejs/svelte) appli
 
 Main features:
 
-- Leverages **hash-based routing**, which is optimal for SPAs and doesn't require any server-side processing
+- Supports both **hash-based routing** (default) and **History API path-based routing** for clean URLs
 - Insanely simple to use, and has a minimal footprint
 - Uses a vendored copy of the tiny [regexparam](https://github.com/lukeed/regexparam) for parsing routes, with support for parameters (e.g. `/book/:id?`) and more
 
 This module is released under MIT license, forked from [ItalyPaleAle/svelte-spa-router](https://github.com/ItalyPaleAle/svelte-spa-router).
 
-## Hash-based routing
+## Routing modes
+
+### Hash-based routing (default)
 
 With hash-based routing, navigation is possible thanks to storing the current view in the part of the URL after `#`, called "hash" or "fragment".
 
 For example, if your SPA is in a static file called `index.html`, your URLs for navigating within the app look something like `index.html#/profile`, `index.html#/book/42`, etc. (The `index.html` part can usually be omitted for the index file, so you can just create URLs that look like `http://example.com/#/profile`).
 
-When I created this component, other routers for Svelte apps implemented navigation using the HTML5 history API. While those URLs look nicer (e.g. you can actually navigate to `http://example.com/profile`), they are not ideal for static Single Page Applications. In order for users to be able to share links or even just refresh the page, you are required to have a server on the backend processing the request, and building fully-static apps is much harder as a consequence.
-
 Hash-based routing is simpler, works well even without a server, and it's generally better suited for static SPAs, especially when SEO isn't a concern, as is the case when the app requires authentication. Many popular apps use hash-based routing, including GMail!
+
+### Path-based routing (History API)
+
+If you prefer clean URLs without the `#` fragment (e.g. `http://example.com/profile` instead of `http://example.com/#/profile`), you can enable path-based routing using the History API by setting `hashMode={false}` on the Router component:
+
+```svelte
+<Router {routes} hashMode={false} />
+```
+
+All other APIs (`push`, `pop`, `replace`, `use:link`, `use:active`, route definitions) work exactly the same in both modes. No changes to your route definitions or navigation code are needed.
+
+**Important:** When using path-based routing, your server must be configured to serve your `index.html` for all routes (SPA fallback). Without this, refreshing the page or navigating directly to a URL like `/books` will result in a 404 from the server. Common configurations:
+
+- **Nginx:** `try_files $uri $uri/ /index.html;`
+- **Apache:** Use `FallbackResource /index.html` or a rewrite rule
+- **Vite dev server:** Already handles this by default
+- **Static hosts (Netlify, Vercel):** Add a `_redirects` or `vercel.json` rewrite rule
 
 ## Sample code
 
@@ -31,10 +48,19 @@ git clone https://github.com/bmlt-enabled/svelte-spa-router
 cd svelte-spa-router
 npm install
 
+# Hash-mode example
 npm run dev:example
+
+# Test app (hash mode)
+npm run dev:test
+
+# Test app (path mode / History API)
+npm run dev:test-path
 ```
 
-The example will be running at http://localhost:5050
+- Example app: http://localhost:5050
+- Test app (hash mode): http://localhost:5051
+- Test app (path mode): http://localhost:5052
 
 ## Using @bmlt-enabled/svelte-spa-router
 
@@ -103,11 +129,15 @@ Then, display the router anywhere you'd like by placing the component in the mar
 
 ```svelte
 <body>
+    <!-- Hash-based routing (default) -->
     <Router {routes} />
+
+    <!-- Or, for clean URLs using the History API -->
+    <Router {routes} hashMode={false} />
 </body>
 ```
 
-The `routes` prop is the dictionary defined above.
+The `routes` prop is the dictionary defined above. The optional `hashMode` prop controls whether the router uses hash-based URLs (default, `true`) or the History API for clean path-based URLs (`false`). See [Routing modes](#routing-modes) for details.
 
 That's it! You already have all that you need for a fully-functional routing experience.
 
@@ -166,13 +196,21 @@ You can learn more about all the features of `wrap` in the documentation for [ro
 
 ### Navigating between pages
 
-You can navigate between pages with normal anchor (`<a>`) tags. For example:
+In hash mode (the default), you can navigate between pages with normal anchor (`<a>`) tags using the `#` prefix:
 
 ```svelte
 <a href="#/book/123">Thus Spoke Zarathustra</a>
 ```
 
+In path mode (`hashMode={false}`), use regular paths:
+
+```svelte
+<a href="/book/123">Thus Spoke Zarathustra</a>
+```
+
 #### The `use:link` action
+
+The `use:link` action works the same in both modes. You always write paths starting with `/` and the router handles the rest:
 
 Rather than having to type `#` before each link, you can also use the `use:link` action:
 
@@ -291,9 +329,9 @@ If you need both location and querystring together, use `router.loc`.
 
 ### Querystring parameters
 
-You can also extract "querystring" parameters from the hash of the page. This isn't the _real_ querystring, as it's located after the `#` character in the URL, but it can be used in a similar way. For example: `#/books?show=authors,titles&order=1`.
+You can extract querystring parameters from the URL. In hash mode, these are part of the hash fragment (e.g. `#/books?show=authors,titles&order=1`). In path mode, they come from the real URL querystring (e.g. `/books?show=authors,titles&order=1`).
 
-When @bmlt-enabled/svelte-spa-router finds a "querystring" in the hash, it separates that from the location and returns it as a string in `router.querystring`. For example:
+The router separates the querystring from the location and returns it as a string in `router.querystring`. For example:
 
 ```svelte
 <script>
@@ -422,3 +460,4 @@ Check out the [Advanced Usage](/AdvancedUsage.md) documentation for using:
 - [Nested routers](/AdvancedUsage.md#nested-routers)
 - [Route groups](/AdvancedUsage.md#route-groups)
 - [Restore scroll position](/AdvancedUsage.md#restore-scroll-position)
+- [Path-based routing (History API)](/AdvancedUsage.md#path-based-routing-history-api)

@@ -42,7 +42,8 @@
         "test:e2e": "npx playwright test",
         "test": "npm run test:unit && npm run test:e2e",
         "dev:example": "npx vite --config examples/basic-routing/vite.config.js --port 5050",
-        "dev:test": "npx vite --config tests/app/vite.config.js --port 5051"
+        "dev:test": "npx vite --config tests/app/vite.config.js --port 5051",
+        "dev:test-path": "npx vite --config tests/app-path/vite.config.js --port 5052"
     },
     "repository": {
         "type": "git",

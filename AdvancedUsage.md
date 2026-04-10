@@ -16,6 +16,7 @@ Thanks to the many features of Svelte or other components in the ecosystem, @bml
 - [Nested routers](#nested-routers)
 - [Route groups](#route-groups)
 - [Restore scroll position](#restore-scroll-position)
+- [Path-based routing (History API)](#path-based-routing-history-api)
 
 ## Route wrapping
 
@@ -598,3 +599,85 @@ To enable that, set the `restoreScrollState` property to `true` in the router (i
 ```
 
 **Important:** In order for the scroll position to be restored, you need to trigger a page navigation using either the `use:link` action or the `push` method. Navigating using links starting with `#` (such as `<a href="#/books">`) will not allow restoring the scroll position.
+
+## Path-based routing (History API)
+
+By default, @bmlt-enabled/svelte-spa-router uses hash-based routing (e.g. `http://example.com/#/books`). If you prefer clean URLs without the hash fragment, you can switch to path-based routing using the HTML5 History API.
+
+### Enabling path mode
+
+Set the `hashMode` prop to `false` on the Router component:
+
+```svelte
+<script>
+    import Router from '@bmlt-enabled/svelte-spa-router'
+
+    const routes = {
+        '/': Home,
+        '/books': Books,
+        '*': NotFound,
+    }
+</script>
+
+<Router {routes} hashMode={false} />
+```
+
+With this configuration, URLs will look like `http://example.com/books` instead of `http://example.com/#/books`.
+
+### Programmatic configuration
+
+You can also set the routing mode programmatically using `setHashMode`, which is useful if you need to configure the mode before the Router component mounts:
+
+```js
+import { setHashMode } from '@bmlt-enabled/svelte-spa-router'
+
+// Switch to path-based routing
+setHashMode(false)
+```
+
+### What stays the same
+
+All other APIs work identically in both modes:
+
+- **Route definitions** use the same syntax (`/`, `/books`, `/user/:id`, `*`)
+- **`push()`, `pop()`, `replace()`** accept the same path format (e.g. `push('/books')`)
+- **`use:link`** works the same way: `<a href="/books" use:link>`
+- **`use:active`** works the same way
+- **`router.location`**, **`router.querystring`**, **`router.params`** all work the same
+- **Route pre-conditions**, **`wrap()`**, **callbacks** all work the same
+
+### Server configuration
+
+When using path-based routing, your server must be configured to serve your `index.html` for all routes. Without this, refreshing the page or navigating directly to a URL like `/books` will result in a 404 from the server, since no file exists at that path.
+
+Common server configurations:
+
+**Nginx:**
+
+```nginx
+location / {
+    try_files $uri $uri/ /index.html;
+}
+```
+
+**Apache (.htaccess):**
+
+```apache
+FallbackResource /index.html
+```
+
+**Netlify (_redirects):**
+
+```
+/*    /index.html   200
+```
+
+**Vercel (vercel.json):**
+
+```json
+{
+    "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+```
+
+**Vite dev server:** Handles SPA fallback by default, no extra configuration needed.
