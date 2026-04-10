@@ -8,6 +8,14 @@
      */
     let _hashMode = true
 
+    /**
+     * Base path for path-based routing (e.g. '/meetings').
+     * Stripped from incoming URLs and prepended to outgoing ones.
+     * Only used when _hashMode is false.
+     * @private
+     */
+    let _basePath = ''
+
     class Router {
         /**
          * The current full location (incl. querystring)
@@ -86,9 +94,11 @@
      * Sets the routing mode. Call this before the Router component mounts, or use the `hashMode` prop.
      *
      * @param {boolean} hashMode - If true (default), uses hash-based routing. If false, uses History API path-based routing.
+     * @param {string} [basePath] - Base path for path-based routing (e.g. '/meetings'). Stripped from incoming URLs and prepended to outgoing ones. Only used when hashMode is false.
      */
-    export function setHashMode(hashMode) {
+    export function setHashMode(hashMode, basePath) {
         _hashMode = hashMode
+        _basePath = (basePath || '').replace(/\/$/, '')
         router._loc = getLocation()
         router._setupListener()
     }
@@ -122,7 +132,11 @@
 
             return { location, querystring }
         } else {
-            const location = window.location.pathname || '/'
+            let location = window.location.pathname || '/'
+            // Strip basePath prefix so app routes always start at '/'
+            if (_basePath && location.startsWith(_basePath)) {
+                location = location.slice(_basePath.length) || '/'
+            }
             const querystring = window.location.search
                 ? window.location.search.slice(1)
                 : ''
@@ -164,9 +178,10 @@
                 (location.charAt(0) === '#' ? '' : '#') + location
         } else {
             // Strip any leading #/ for path mode
-            const dest =
+            const path =
                 location.charAt(0) === '#' ? location.slice(1) : location
-            window.history.pushState({}, undefined, dest)
+            const dest = _basePath + path
+            window.history.pushState({}, '', dest)
             // pushState doesn't fire popstate, so update manually
             router._loc = getLocation()
         }
@@ -221,15 +236,16 @@
             // The method above doesn't trigger the hashchange event, so let's do that manually
             window.dispatchEvent(new Event('hashchange'))
         } else {
-            const dest =
+            const path =
                 location.charAt(0) === '#' ? location.slice(1) : location
+            const dest = _basePath + path
             try {
                 const newState = {
                     ...history.state,
                 }
                 delete newState['__svelte_spa_router_scrollX']
                 delete newState['__svelte_spa_router_scrollY']
-                window.history.replaceState(newState, undefined, dest)
+                window.history.replaceState(newState, '', dest)
             } catch (_e) {
                 // eslint-disable-next-line no-console
                 console.warn(
@@ -373,8 +389,9 @@
             window.location.hash = href
         } else {
             // In path mode, use pushState and manually update the router
-            const dest = href.charAt(0) === '#' ? href.slice(1) : href
-            window.history.pushState({}, undefined, dest)
+            const path = href.charAt(0) === '#' ? href.slice(1) : href
+            const dest = _basePath + path
+            window.history.pushState({}, '', dest)
             router._loc = getLocation()
         }
     }
@@ -413,6 +430,11 @@
          */
         hashMode = true,
         /**
+         * Base path for path-based routing (e.g. '/meetings'). Stripped from incoming URLs and
+         * prepended to outgoing ones. Only used when hashMode is false.
+         */
+        basePath = '',
+        /**
          * If set to true, the router will restore scroll positions on back navigation
          * and scroll to top on forward navigation.
          */
@@ -424,9 +446,9 @@
     } = $props()
 
     // svelte-ignore state_referenced_locally
-    // hashMode is static configuration, initial capture is intended
+    // hashMode and basePath are static configuration, initial capture is intended
     if (!hashMode && _hashMode) {
-        setHashMode(false)
+        setHashMode(false, basePath)
     } else if (hashMode && !_hashMode) {
         setHashMode(true)
     }

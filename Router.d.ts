@@ -76,8 +76,9 @@ export interface WrappedComponent {
  * Sets the routing mode.
  *
  * @param hashMode - If true (default), uses hash-based routing. If false, uses History API path-based routing.
+ * @param basePath - Base path for path-based routing (e.g. '/meetings'). Stripped from incoming URLs and prepended to outgoing ones. Only used when hashMode is false.
  */
-export function setHashMode(hashMode: boolean): void
+export function setHashMode(hashMode: boolean, basePath?: string): void
 
 /**
  * Navigates to a new page programmatically.
@@ -229,6 +230,11 @@ export interface RouterProps {
      * serve the app for all routes (i.e., redirect all requests to index.html).
      */
     hashMode?: boolean
+    /**
+     * Base path for path-based routing (e.g. '/meetings'). Stripped from incoming URLs
+     * and prepended to outgoing ones. Only used when hashMode is false.
+     */
+    basePath?: string
     /**
      * If set to true, the router will restore scroll positions on back navigation
      * and scroll to top on forward navigation.

@@ -30,6 +30,23 @@ If you prefer clean URLs without the `#` fragment (e.g. `http://example.com/prof
 
 All other APIs (`push`, `pop`, `replace`, `use:link`, `use:active`, route definitions) work exactly the same in both modes. No changes to your route definitions or navigation code are needed.
 
+#### Base path
+
+When your app is served under a sub-path (e.g. `example.com/meetings/`), you can set a `basePath` so the router automatically strips it from incoming URLs and prepends it to outgoing ones:
+
+```svelte
+<Router {routes} hashMode={false} basePath="/meetings" />
+```
+
+Or programmatically:
+
+```js
+import { setHashMode } from '@bmlt-enabled/svelte-spa-router'
+setHashMode(false, '/meetings')
+```
+
+With `basePath="/meetings"`, `push('/book/42')` navigates to `/meetings/book/42`, and `router.location` returns `/book/42` — your app code never needs to know about the prefix.
+
 **Important:** When using path-based routing, your server must be configured to serve your `index.html` for all routes (SPA fallback). Without this, refreshing the page or navigating directly to a URL like `/books` will result in a 404 from the server. Common configurations:
 
 - **Nginx:** `try_files $uri $uri/ /index.html;`
