@@ -2,6 +2,7 @@ name: CI
 
 on:
     push:
+        branches: [main]
     pull_request:
 
 jobs:
@@ -25,6 +26,9 @@ jobs:
 
             - name: 🔎 Type check
               run: npm run test:types
+
+            - name: 🔬 Svelte check
+              run: npm run test:svelte-check
 
             - name: 🧪 Unit tests
               run: npm run test:unit

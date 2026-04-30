@@ -49,7 +49,8 @@ setHashMode(false, '/meetings')
 const _loc: { location: string; querystring: string } = router.loc
 const _location: string = router.location
 const _qs: string = router.querystring
-const _params: Record<string, string> | undefined = router.params
+const _params: Record<string, string> | RegExpExecArray | undefined =
+    router.params
 
 // --- link action returns both update and destroy ---
 const node = {} as HTMLElement
@@ -140,7 +141,7 @@ const cond: RoutePrecondition = (detail) => {
     const _route: string | RegExp = detail.route
     const _l: string = detail.location
     const _qs2: string = detail.querystring
-    const _p: Record<string, string> | null = detail.params
+    const _p: Record<string, string> | RegExpExecArray | null = detail.params
     return true
 }
 void cond
