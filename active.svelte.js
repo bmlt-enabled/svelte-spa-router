@@ -46,6 +46,7 @@ $effect.root(() => {
  * @typedef {Object} ActiveOptions
  * @property {string|RegExp} [path] - Path expression that makes the link active when matched (must start with '/' or '*'); default is the link's href
  * @property {string} [className] - CSS class to apply to the element when active; default value is "active"
+ * @property {string} [inactiveClassName] - CSS class to apply to the element when inactive; nothing added by default
  */
 
 /**

@@ -1,7 +1,6 @@
 ///<reference types="svelte" />
 
 import type { Component } from 'svelte'
-import { Readable } from 'svelte/store'
 
 /** Dictionary with route details passed to pre-conditions and callback props */
 export interface RouteDetail {
@@ -54,7 +53,7 @@ export type RoutePrecondition = (
 /** Object returned by the `wrap` method */
 export interface WrappedComponent {
     /** Component to load (this is always asynchronous) */
-    component: Component<any, any>
+    component: AsyncSvelteComponent
 
     /** Route pre-conditions to validate */
     conditions?: RoutePrecondition[]
@@ -133,11 +132,22 @@ export type LinkActionUpateFunc = LinkActionUpdateFunc
 export function link(
     node: HTMLElement,
     opts?: LinkActionOpts,
-): { update: LinkActionUpdateFunc }
+): { update: LinkActionUpdateFunc; destroy: () => void }
 export function link(
     node: HTMLElement,
     hrefVar?: string,
-): { update: LinkActionUpdateFunc }
+): { update: LinkActionUpdateFunc; destroy: () => void }
+
+/**
+ * Restores the scroll state from the given history state, or scrolls to the top
+ * if no state is provided.
+ *
+ * @param state - The history state to restore from.
+ */
+export function restoreScroll(state?: {
+    __svelte_spa_router_scrollX: number
+    __svelte_spa_router_scrollY: number
+}): void
 
 /** Full location from the hash: page and querystring */
 interface Location {
@@ -147,12 +157,6 @@ interface Location {
     /** Querystring from the hash, as a string not parsed */
     querystring?: string
 }
-
-/**
- * Readable store that returns the current full location (incl. querystring)
- * @deprecated Use `router.loc` instead.
- */
-export const loc: Readable<Location>
 
 /**
  * Router state object, containing the current location, querystring and params.
@@ -175,25 +179,6 @@ export interface RouterState {
  * Router state object, containing the current location, querystring and params.
  */
 export const router: RouterState
-
-/**
- * Readable store that returns the current location
- * @deprecated Use `router.location` instead.
- */
-export const location: Readable<string>
-
-/**
- * Readable store that returns the current querystring
- * @deprecated Use `router.querystring` instead.
- */
-export const querystring: Readable<string | undefined>
-
-/**
- * Readable store that returns the current list of params
- * @deprecated Use `router.params` instead.
- */
-export const params: Readable<Record<string, string> | undefined>
-// Note: the above is implemented as writable but exported as readable because consumers should not modify the value
 
 /** List of routes */
 export type RouteDefinition =
