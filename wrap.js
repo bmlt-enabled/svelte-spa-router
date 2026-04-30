@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * @typedef {Object} WrappedComponent Object returned by the `wrap` method
  * @property {SvelteComponent} component - Component to load (this is always asynchronous)

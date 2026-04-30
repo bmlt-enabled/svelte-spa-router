@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * @overload
  * @param {string} input The route pattern

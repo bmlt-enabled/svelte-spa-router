@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "noEmit": true,
+        "skipLibCheck": true,
+        "allowJs": true,
+        "checkJs": true,
+        "types": ["svelte"],
+        "lib": ["esnext", "dom"]
+    },
+    "include": [
+        "wrap.js",
+        "wrap.d.ts",
+        "active.d.ts",
+        "regexparam.js",
+        "regexparam.d.ts",
+        "Router.d.ts",
+        "tests/types/**/*.ts"
+    ]
+}
