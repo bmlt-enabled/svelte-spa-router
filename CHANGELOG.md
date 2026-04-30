@@ -1,5 +1,14 @@
 # Changelog
 
+## 5.2.1 (April 30, 2026)
+
+* Tightened `Location.querystring` and `RouterState.querystring` from `string | undefined` to `string` — the implementation always returns a string (empty when absent), so consumers no longer need to null-check.
+* `Location` interface is now exported.
+* Added missing `inactiveClassName` field to the `ActiveOptions` JSDoc typedef in `active.svelte.js`.
+* **Type smoke test** — added `npm run test:types` (and a corresponding CI step) that type-checks a public-API smoke test plus the JSDoc on `wrap.js` and `regexparam.js`. Future drift between the `.d.ts` files and the source will fail CI.
+* **Path-routing example** — added a new `examples/path-routing` example demonstrating `hashMode={false}`, runnable with `npm run dev:example-path`.
+* **Docs** — documented the manually-callable `restoreScroll` export in `AdvancedUsage.md`.
+
 ## 5.2.0 (April 30, 2026)
 
 * **Type definition fixes** — fixed drift between `.d.ts` files and the JS/Svelte sources:
@@ -7,7 +16,6 @@
   * Added missing `restoreScroll` export to `Router.d.ts`.
   * Added missing `destroy` method to the `link` action's return type.
   * Fixed `WrappedComponent.component` type to `AsyncSvelteComponent` (it's a function, not a Component).
-  * Added missing `inactiveClassName` field to the `ActiveOptions` JSDoc typedef in `active.svelte.js`.
 
 ## 5.1.1 (April 10, 2026)
 

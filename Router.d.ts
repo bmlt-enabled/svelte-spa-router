@@ -150,12 +150,12 @@ export function restoreScroll(state?: {
 }): void
 
 /** Full location from the hash: page and querystring */
-interface Location {
+export interface Location {
     /** Location (page/view), for example `/book` */
     location: string
 
-    /** Querystring from the hash, as a string not parsed */
-    querystring?: string
+    /** Querystring as a string (not parsed); empty string when absent */
+    querystring: string
 }
 
 /**
@@ -168,8 +168,8 @@ export interface RouterState {
     /** The current location (excluding querystring) */
     readonly location: string
 
-    /** The current querystring */
-    readonly querystring: string | undefined
+    /** The current querystring (empty string when absent) */
+    readonly querystring: string
 
     /** The currently-matched params */
     readonly params: Record<string, string> | undefined

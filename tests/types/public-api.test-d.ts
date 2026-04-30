@@ -46,9 +46,9 @@ setHashMode(true)
 setHashMode(false, '/meetings')
 
 // --- router state object (readonly fields) ---
-const _loc: { location: string; querystring?: string } = router.loc
+const _loc: { location: string; querystring: string } = router.loc
 const _location: string = router.location
-const _qs: string | undefined = router.querystring
+const _qs: string = router.querystring
 const _params: Record<string, string> | undefined = router.params
 
 // --- link action returns both update and destroy ---

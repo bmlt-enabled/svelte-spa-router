@@ -68,6 +68,9 @@ npm install
 # Hash-mode example
 npm run dev:example
 
+# Path-mode example (History API)
+npm run dev:example-path
+
 # Test app (hash mode)
 npm run dev:test
 
@@ -75,7 +78,8 @@ npm run dev:test
 npm run dev:test-path
 ```
 
-- Example app: http://localhost:5050
+- Example app (hash mode): http://localhost:5050
+- Example app (path mode): http://localhost:5054
 - Test app (hash mode): http://localhost:5051
 - Test app (path mode): http://localhost:5052
 

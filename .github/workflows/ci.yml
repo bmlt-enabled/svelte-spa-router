@@ -15,13 +15,16 @@ jobs:
                   node-version: 24
 
             - name: 📦 Install dependencies
-              run: npm install
+              run: npm ci
 
             - name: 🎨 Format check
               run: npm run format:check
 
             - name: 🧹 Lint
               run: npm run lint
+
+            - name: 🔎 Type check
+              run: npm run test:types
 
             - name: 🧪 Unit tests
               run: npm run test:unit
