@@ -1,0 +1,14 @@
+{
+    "extends": "./tsconfig.json",
+    "include": [
+        "Router.svelte",
+        "Router.d.ts",
+        "active.svelte.js",
+        "active.d.ts",
+        "wrap.js",
+        "wrap.d.ts",
+        "regexparam.js",
+        "regexparam.d.ts",
+        "tests/types/**/*.ts"
+    ]
+}

@@ -29,9 +29,10 @@
          * The current querystring
          */
         _querystring = $derived(this._loc.querystring)
+        /** @type {any} */
         _params = $state.raw(undefined)
 
-        /** @private */
+        /** @type {(() => void) | null} */
         _removeListener = null
 
         /**
@@ -60,7 +61,6 @@
             this._setupListener()
         }
 
-        /** @private */
         _setupListener() {
             // Remove previous listener if any
             if (this._removeListener) {
@@ -106,7 +106,7 @@
     /**
      * @typedef {Object} Location
      * @property {string} location - Location (page/view), for example `/book`
-     * @property {string} [querystring] - Querystring from the hash, as a string not parsed
+     * @property {string} querystring - Querystring as a string (not parsed); empty string when absent
      */
     /**
      * Returns the current location from the hash or path, depending on the routing mode.
@@ -170,7 +170,7 @@
                 __svelte_spa_router_scrollX: window.scrollX,
                 __svelte_spa_router_scrollY: window.scrollY,
             },
-            undefined,
+            '',
         )
 
         if (_hashMode) {
@@ -225,7 +225,7 @@
                 }
                 delete newState['__svelte_spa_router_scrollX']
                 delete newState['__svelte_spa_router_scrollY']
-                window.history.replaceState(newState, undefined, dest)
+                window.history.replaceState(newState, '', dest)
             } catch (_e) {
                 // eslint-disable-next-line no-console
                 console.warn(
@@ -261,8 +261,8 @@
     /**
      * Dictionary with options for the link action.
      * @typedef {Object} LinkActionOpts
-     * @property {string} href - A string to use in place of the link's href attribute. Using this allows for updating link's targets reactively.
-     * @property {boolean} disabled - If true, link is disabled
+     * @property {string} [href] - A string to use in place of the link's href attribute. Using this allows for updating link's targets reactively.
+     * @property {boolean} [disabled] - If true, link is disabled
      */
 
     /**
@@ -278,31 +278,30 @@
      * @param {string|LinkActionOpts} opts - Options object. For legacy reasons, we support a string too which will be the value for opts.href
      */
     export function link(node, opts) {
-        opts = linkOpts(opts)
-
         // Only apply to <a> tags
         if (!node || !node.tagName || node.tagName.toLowerCase() !== 'a') {
             throw Error('Action "link" can only be used with <a> tags')
         }
 
         // Store current opts in a mutable reference so the click handler always sees the latest value
-        let currentOpts = opts
+        let currentOpts = linkOpts(opts)
 
         // Set initial href
         updateLinkHref(node, currentOpts)
 
         // Add click handler once, using currentOpts reference
+        /** @param {MouseEvent} event */
         const clickHandler = (event) => {
             event.preventDefault()
             if (!currentOpts.disabled) {
-                scrollstateHistoryHandler(
-                    event.currentTarget.getAttribute('href'),
-                )
+                const target = /** @type {HTMLElement} */ (event.currentTarget)
+                scrollstateHistoryHandler(target.getAttribute('href') || '')
             }
         }
         node.addEventListener('click', clickHandler)
 
         return {
+            /** @param {string|LinkActionOpts} [updated] */
             update(updated) {
                 currentOpts = linkOpts(updated)
                 updateLinkHref(node, currentOpts)
@@ -331,7 +330,11 @@
         }
     }
 
-    // Internal function used by the link function to update href attribute
+    /**
+     * Internal function used by the link function to update href attribute
+     * @param {HTMLElement} node
+     * @param {LinkActionOpts} opts
+     */
     function updateLinkHref(node, opts) {
         let href = opts.href || node.getAttribute('href')
 
@@ -356,15 +359,16 @@
         node.setAttribute('href', href)
     }
 
-    // Internal function that ensures the argument of the link action is always an object
+    /**
+     * Internal function that ensures the argument of the link action is always an object
+     * @param {string|LinkActionOpts} [val]
+     * @returns {LinkActionOpts}
+     */
     function linkOpts(val) {
-        if (val && typeof val == 'string') {
-            return {
-                href: val,
-            }
-        } else {
-            return val || {}
+        if (typeof val == 'string') {
+            return { href: val }
         }
+        return val || {}
     }
 
     /**
@@ -381,7 +385,7 @@
                 __svelte_spa_router_scrollX: window.scrollX,
                 __svelte_spa_router_scrollY: window.scrollY,
             },
-            undefined,
+            '',
         )
 
         if (_hashMode) {
@@ -400,6 +404,7 @@
 <script>
     import { parse } from './regexparam.js'
 
+    /** @type {import('./Router.d.ts').RouterProps} */
     const {
         /**
          * Dictionary of all routes, in the format `'/path': component`.
@@ -460,8 +465,8 @@
         /**
          * Initializes the object and creates a regular expression from the path, using regexparam.
          *
-         * @param {string} path - Path to the route (must start with '/' or '*')
-         * @param {SvelteComponent|WrappedComponent} component - Svelte component for the route, optionally wrapped
+         * @param {string|RegExp} path - Path to the route (must start with '/' or '*'), or a RegExp
+         * @param {any} component - Svelte component for the route, optionally wrapped
          */
         constructor(path, component) {
             if (
@@ -473,7 +478,7 @@
                 throw Error('Invalid component object')
             }
 
-            // Path must be a regular or expression, or a string starting with '/' or '*'
+            // Path must be a regular expression, or a string starting with '/' or '*'
             if (
                 !path ||
                 (typeof path == 'string' &&
@@ -486,7 +491,7 @@
                 )
             }
 
-            const { pattern, keys } = parse(path)
+            const { pattern, keys } = parse(/** @type {any} */ (path))
 
             this.path = path
 
@@ -496,17 +501,22 @@
                 component._sveltesparouter === true
             ) {
                 this.component = component.component
+                /** @type {Array<(detail: any) => boolean | Promise<boolean>>} */
                 this.conditions = component.conditions || []
                 this.userData = component.userData
+                /** @type {Record<string, any>} */
                 this.props = component.props || {}
             } else {
                 // Convert the component to a function that returns a Promise, to normalize it
                 this.component = () => Promise.resolve(component)
+                /** @type {Array<(detail: any) => boolean | Promise<boolean>>} */
                 this.conditions = []
+                /** @type {Record<string, any>} */
                 this.props = {}
             }
 
             this._pattern = pattern
+            /** @type {string[] | false} */
             this._keys = keys
         }
 
@@ -516,7 +526,7 @@
          * In case of no match, the method will return `null`.
          *
          * @param {string} path - Path to test
-         * @returns {null|Object.<string, string>} List of parameters from the URL if there's a match, or `null` otherwise.
+         * @returns {null | Record<string, string | null> | RegExpExecArray} List of parameters from the URL if there's a match, or `null` otherwise.
          */
         match(path) {
             // If there's a prefix, check if it matches the start of the path.
@@ -549,15 +559,17 @@
                 return matches
             }
 
+            /** @type {Record<string, string | null>} */
             const out = {}
+            const keys = this._keys
             let i = 0
-            while (i < this._keys.length) {
+            while (i < keys.length) {
                 // In the match parameters, URL-decode all values
                 try {
-                    out[this._keys[i]] =
+                    out[keys[i]] =
                         decodeURIComponent(matches[i + 1] || '') || null
                 } catch (_e) {
-                    out[this._keys[i]] = null
+                    out[keys[i]] = null
                 }
                 i++
             }
@@ -572,7 +584,7 @@
          * @property {string} location - Location path
          * @property {string} querystring - Querystring from the hash
          * @property {object} [userData] - Custom data passed by the user
-         * @property {SvelteComponent} [component] - Svelte component (only in `onRouteLoaded`)
+         * @property {import('svelte').Component<any, any>} [component] - Svelte component (only in `onRouteLoaded`)
          * @property {string} [name] - Name of the Svelte component (only in `onRouteLoaded`)
          */
 
@@ -580,7 +592,7 @@
          * Executes all conditions (if any) to control whether the route can be shown. Conditions are executed in the order they are defined, and if a condition fails, the following ones aren't executed.
          *
          * @param {RouteDetail} detail - Route detail
-         * @returns {boolean} Returns true if all the conditions succeeded
+         * @returns {Promise<boolean>} Returns true if all the conditions succeeded
          */
         async checkConditions(detail) {
             for (let i = 0; i < this.conditions.length; i++) {
@@ -594,6 +606,7 @@
     }
 
     // Set up all routes
+    /** @type {RouteItem[]} */
     const routesList = []
     // svelte-ignore state_referenced_locally
     // routes are static, initial capture is intended
@@ -604,17 +617,23 @@
         })
     } else {
         // We have an object, so iterate on its own properties
-        Object.keys(routes).forEach((path) => {
-            routesList.push(new RouteItem(path, routes[path]))
+        const routesObj = /** @type {Record<string, any>} */ (routes)
+        Object.keys(routesObj).forEach((path) => {
+            routesList.push(new RouteItem(path, routesObj[path]))
         })
     }
 
     // State declarations for the currently-rendered route
+    /** @type {import('svelte').Component<any, any> | null} */
     let component = $state.raw(null)
+    /** @type {Record<string, any> | null} */
     let componentParams = $state.raw(null)
-    let props = $state.raw({})
+    /** @type {Record<string, any>} */
+    let routeProps = $state.raw({})
 
-    let previousScrollState = null
+    /** @type {{__svelte_spa_router_scrollX: number, __svelte_spa_router_scrollY: number} | undefined} */
+    let previousScrollState = undefined
+    /** @type {any} */
     let componentObj = null
 
     // Effects
@@ -624,6 +643,7 @@
 
     $effect(() => {
         if (restoreScrollState) {
+            /** @param {PopStateEvent} event */
             const popStateChanged = (event) => {
                 if (
                     event.state &&
@@ -632,7 +652,7 @@
                 ) {
                     previousScrollState = event.state
                 } else {
-                    previousScrollState = null
+                    previousScrollState = undefined
                 }
             }
 
@@ -641,6 +661,10 @@
         }
     })
 
+    /**
+     * @param {(detail: any) => void} event
+     * @param {any} detail
+     */
     async function dispatchNextTick(event, detail) {
         // Execute this code when the current call stack is complete
         await tick()
@@ -698,7 +722,7 @@
                         component = obj.loading
                         componentObj = obj
                         componentParams = obj.loadingParams
-                        props = {}
+                        routeProps = {}
                         const comp = obj.loading
                         dispatchNextTick(onRouteLoaded, {
                             ...detail,
@@ -732,20 +756,20 @@
                     matchParams = match
                 }
                 componentParams = matchParams
-                props = routesList[i].props
+                routeProps = routesList[i].props
 
                 const comp = component
                 dispatchNextTick(onRouteLoaded, {
                     ...detail,
                     component: comp,
-                    name: comp.name,
+                    name: comp ? comp.name : '',
                     params: matchParams,
                 })
 
                 router._params = matchParams
                 if (restoreScrollState) {
                     restoreScroll(previousScrollState)
-                    previousScrollState = null
+                    previousScrollState = undefined
                 }
                 return
             }
@@ -755,7 +779,7 @@
             router._params = undefined
             if (restoreScrollState) {
                 restoreScroll(previousScrollState)
-                previousScrollState = null
+                previousScrollState = undefined
             }
         })
 
@@ -768,8 +792,8 @@
 {#if component}
     {@const Component = component}
     {#if componentParams}
-        <Component params={componentParams} {onRouteEvent} {...props} />
+        <Component params={componentParams} {onRouteEvent} {...routeProps} />
     {:else}
-        <Component {onRouteEvent} {...props} />
+        <Component {onRouteEvent} {...routeProps} />
     {/if}
 {/if}

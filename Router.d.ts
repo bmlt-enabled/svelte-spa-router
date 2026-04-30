@@ -13,8 +13,12 @@ export interface RouteDetail {
     /** Querystring from the hash */
     querystring: string
 
-    /** Params matched in the route */
-    params: Record<string, string> | null
+    /**
+     * Params matched in the route. For string routes this is a `Record<string, string>` keyed
+     * by the named placeholders. For RegExp routes this is the `RegExpExecArray` returned by the
+     * pattern's `exec()`. `null` when the route has no parameters.
+     */
+    params: Record<string, string> | RegExpExecArray | null
 
     /** Custom data passed by the user */
     userData?: object
@@ -171,8 +175,12 @@ export interface RouterState {
     /** The current querystring (empty string when absent) */
     readonly querystring: string
 
-    /** The currently-matched params */
-    readonly params: Record<string, string> | undefined
+    /**
+     * The currently-matched params. For string routes this is a `Record<string, string>` keyed
+     * by the named placeholders; for RegExp routes this is the `RegExpExecArray` returned by the
+     * pattern's `exec()`. `undefined` when no route is currently matched.
+     */
+    readonly params: Record<string, string> | RegExpExecArray | undefined
 }
 
 /**
