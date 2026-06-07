@@ -67,6 +67,11 @@
                 this._removeListener()
             }
 
+            // No `window` during SSR/prerender: nothing to listen to.
+            if (typeof window === 'undefined') {
+                return
+            }
+
             if (_hashMode) {
                 const handler = () => {
                     this._loc = getLocation()
@@ -115,6 +120,11 @@
      * @private
      */
     function getLocation() {
+        // Not in a browser (SSR/prerender): return a safe default so the
+        // module can be imported in Node without touching `window`.
+        if (typeof window === 'undefined') {
+            return { location: '/', querystring: '' }
+        }
         if (_hashMode) {
             const hashPosition = window.location.href.indexOf('#/')
             let location =
