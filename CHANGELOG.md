@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.2.3 (June 7, 2026)
+
+* **SSR/prerender safety** — `Router.svelte` no longer throws `window is not defined` when the module is imported in a non-browser environment (Astro, SvelteKit SSR, static prerendering). The module-level `router` singleton previously accessed `window` on import via `getLocation()` (in the `_loc` initializer) and `window.addEventListener` (in `_setupListener`). Both now guard on `typeof window === 'undefined'`: `getLocation()` returns `{ location: '/', querystring: '' }` and `_setupListener()` is a no-op when there is no `window`. Browser behavior is unchanged — listeners and location reads wire up as before once hydrated. (See ItalyPaleAle/svelte-spa-router#352.)
+
 ## 5.2.2 (April 30, 2026)
 
 * Widened `RouteDetail.params` and `RouterState.params` to include `RegExpExecArray` — when a RegExp route matches, the runtime sets `params` to the regex `exec()` result, not a `Record<string, string>`. The type now reflects the actual runtime contract.

@@ -1,6 +1,6 @@
 {
     "name": "@bmlt-enabled/svelte-spa-router",
-    "version": "5.2.2",
+    "version": "5.2.3",
     "description": "Router for SPAs using Svelte 5",
     "main": "Router.svelte",
     "svelte": "Router.svelte",
