@@ -64,12 +64,8 @@ describe('inject()', () => {
     run('/foo/:bar/*?', '/foo/123/aa/bb/cc', { bar: '123', '*': 'aa/bb/cc' })
 
     // NOTE: Missing non-optional values
-    run('/foo/:id', '/foo/:id', {
-        /* empty */
-    })
-    run('/foo/:id/', '/foo/:id/', {
-        /* empty */
-    })
+    run('/foo/:id', '/foo/:id', {/* empty */})
+    run('/foo/:id/', '/foo/:id/', {/* empty */})
 
     run('/:a/:b/:c', '/1/:b/:c', { a: 1 })
     run('/:a/:b/:c', '/1/:b/3', { a: 1, c: 3 })
