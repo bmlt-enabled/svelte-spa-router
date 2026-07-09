@@ -116,8 +116,7 @@ export type LinkActionOpts = {
 
 /** Type for the update function of the link action */
 export type LinkActionUpdateFunc =
-    | ((opts?: LinkActionOpts) => void)
-    | ((hrefVar?: string) => void)
+    ((opts?: LinkActionOpts) => void) | ((hrefVar?: string) => void)
 
 /** Type for backwards-compatible (typo: Upate) */
 export type LinkActionUpateFunc = LinkActionUpdateFunc
