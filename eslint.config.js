@@ -3,6 +3,9 @@ import svelte from 'eslint-plugin-svelte'
 import prettier from 'eslint-config-prettier'
 
 export default [
+    {
+        ignores: ['docs/'],
+    },
     ...svelte.configs['flat/recommended'],
     prettier,
     {
