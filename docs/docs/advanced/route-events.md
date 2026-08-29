@@ -114,6 +114,6 @@ Example:
 
 For help with the `wrap` function, see [Route wrapping](route-wrapping.md).
 
-:::warning Minified component names
+:::warning[Minified component names]
 When using minifiers such as terser, the name of Svelte components might be altered. It is recommended to use custom [user data](route-wrapping.md#user-data) to identify the component, rather than relying on `detail.name`, which might contain a minified name.
 :::

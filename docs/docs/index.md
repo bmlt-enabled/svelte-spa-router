@@ -23,7 +23,7 @@ It is maintained by [BMLT Enabled](https://bmlt.app) and is a fork of [ItalyPale
 
 This module is released under the MIT license.
 
-:::note Svelte 5 required
+:::note[Svelte 5 required]
 This package requires **Svelte 5 or later**. For Svelte 3 and 4, use the original [upstream project](https://github.com/ItalyPaleAle/svelte-spa-router). See the [Upgrading guide](upgrading.md) for migration notes.
 :::
 

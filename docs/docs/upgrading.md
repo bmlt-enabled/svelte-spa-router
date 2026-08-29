@@ -9,7 +9,7 @@ description: Breaking changes between major versions and how to migrate your app
 
 This page documents the breaking changes between major versions and how to migrate your application.
 
-:::info Fork history
+:::info[Fork history]
 This package is a fork of [ItalyPaleAle/svelte-spa-router](https://github.com/ItalyPaleAle/svelte-spa-router). The `@bmlt-enabled` releases start at 5.x (Svelte 5) and add [path-based routing](path-routing.md) and [base-path support](path-routing.md#base-path). For the full, fork-specific release history see the [CHANGELOG](https://github.com/bmlt-enabled/svelte-spa-router/blob/main/CHANGELOG.md).
 :::
 

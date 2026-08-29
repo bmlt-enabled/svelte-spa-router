@@ -48,6 +48,6 @@ The `active` action accepts a dictionary `options` as its argument:
 
 As a shorthand, instead of passing a dictionary, you can pass a single string or regular expression that will be interpreted as `options.path`.
 
-:::tip Works in both routing modes
+:::tip[Works in both routing modes]
 `use:active` behaves identically in hash mode and path mode — you always write paths starting with `/`.
 :::

@@ -23,7 +23,7 @@ wrap({
 })
 ```
 
-:::warning Pass a function, not an invocation
+:::warning[Pass a function, not an invocation]
 The value of `asyncComponent` must be the **definition of a function** returning a dynamically-imported component, such as `asyncComponent: () => import('./Foo.svelte')`.
 
 Do **not** use `asyncComponent: import('./Foo.svelte')`, which is a function invocation — this would request the module right away rather than on-demand.

@@ -79,6 +79,6 @@ Both routes first load the `Hello` route, as they both match `/hello/*` in the o
 
 Features like highlighting [active links](../active-links.md) still work, regardless of where those links are placed in the page.
 
-:::note Prefixes with parameters
+:::note[Prefixes with parameters]
 If your parent router uses a route that contains parameters, such as `/user/:id`, then you must define a **regular expression** for `prefix`. For example: `prefix={/^\/user\/[0-9]+/}`.
 :::

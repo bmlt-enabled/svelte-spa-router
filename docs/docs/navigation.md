@@ -84,7 +84,7 @@ These methods can be used inside Svelte markup too, for example:
 <button onclick={() => push('/page')}>Go somewhere</button>
 ```
 
-:::info Navigation happens on the next tick
+:::info[Navigation happens on the next tick]
 `push`, `pop`, and `replace` perform their navigation only in the next iteration ("tick") of the JavaScript event loop. This makes it safe to use them inside `onMount` callbacks.
 
 They return a Promise that resolves once the navigation has been triggered (on the next tick) — but note that this is likely **before** the new page has rendered.

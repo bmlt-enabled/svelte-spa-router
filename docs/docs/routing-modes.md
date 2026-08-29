@@ -33,7 +33,7 @@ If you prefer clean URLs without the `#` fragment (e.g. `http://example.com/prof
 
 All other APIs (`push`, `pop`, `replace`, `use:link`, `use:active`, route definitions) work exactly the same in both modes. No changes to your route definitions or navigation code are needed.
 
-:::info Server configuration required
+:::info[Server configuration required]
 Path-based routing requires your server to serve `index.html` for all routes (SPA fallback). See [Path-based routing → Server configuration](path-routing.md#server-configuration) for Nginx, Apache, Netlify, Vercel, and Cloudflare Pages examples.
 :::
 

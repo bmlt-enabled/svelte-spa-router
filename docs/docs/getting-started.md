@@ -63,7 +63,7 @@ Routes must begin with `/` (or `*` for the catch-all route).
 
 Alternatively, you can define routes using [custom regular expressions](regular-expression-routes.md).
 
-:::warning Order matters
+:::warning[Order matters]
 When your users navigate inside the app, the **first matching path** determines which route to load. Always leave any "catch-all" route (e.g. a "Page not found" one) at the end.
 :::
 
