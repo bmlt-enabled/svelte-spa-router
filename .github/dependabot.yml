@@ -14,6 +14,11 @@ updates:
       production-dependencies:
         dependency-type: production
     open-pull-requests-limit: 5
+    ignore:
+      # Stay on TypeScript 6.x; don't let Dependabot bump to 7.
+      - dependency-name: typescript
+        versions:
+          - '>=7.0.0'
     labels:
       - dependencies
     commit-message:
